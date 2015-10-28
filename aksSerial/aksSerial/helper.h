@@ -9,7 +9,9 @@
  * 1> 19/10/2015: Addition of isPower() function
  * 2> 20/10/2015: Addition of getOrder() function
  *                Addition of getMinR() function
- * 3> 28/10/2015: Changes in getOrder(), addition of new parameter logN2
+ * 3> 28/10/2015: *Changes in getOrder(), addition of new parameter logN2
+ *				  *Addition of gcdExists() function
+ * 4> 29/10/2015: *Changes in getMinR(), change in return type
  */
 
 #ifndef HELPER_H
@@ -18,15 +20,19 @@
 #include <iostream>
 #include <mpir.h>
 
-//#define PRINTFUNC		// Uncommnet it to know the entry/exit in functions
-//#define PRINTVALS		// Uncomment it to print values in funtions
-
+#define PRINTFUNC		// Uncommnet it to know the entry/exit in functions
+#define PRINTVALS		// Uncomment it to print values in funtions
+#define LOGSIZE 200		// size of log buffer
 
 /* 
  * isPower() - This function checks if given number is a perfect power or not
  *
  * parameters : number (mpz_t) - the number to be tested
  * return : bool - true if perfect power, else not
+ *
+ * Implementation - It is currently implemented using the library funtion
+ * from MPIR as it provides a very fast implementaion. But the implementation
+ * is libale to change.
  */
 bool isPower(const mpz_t number);
 
@@ -53,9 +59,19 @@ void getOrder(mpz_t k, const mpz_t number, const mpz_t r, const mpz_t logN2);
  * 
  * parameters : r (mpz_t) - the value of min r is stored in this var
  *              number (mpz_t) - the number to be tested
- * return : if co-prime or not (bool) - true if r and number are co-prime
+ * return : void
  */
-bool getMinR(mpz_t r, const mpz_t number);
+void getMinR(mpz_t r, const mpz_t number);
 
+//-------------------------------------------------------------------------//
+
+/*
+* gcdExists() - This function checks if 1 < (a, n) < n for a <=r
+*
+* parameters : number (mpz_t) - the number to be tested
+*              r (mpz_t) - the value of r
+* return : if gcd exists or not (bool) - true if exist and false otherwise
+*/
+bool gcdExists(const mpz_t number, const mpz_t r);
 
 #endif

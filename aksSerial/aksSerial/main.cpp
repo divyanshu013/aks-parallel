@@ -12,22 +12,23 @@ int main()
 	cin >> ip;
 	mpz_init_set_str(n, ip, 10);
 	std::cout << "here " << mpz_sizeinbase(n, 2);
+	
+	int lgN2 = pow(mpz_sizeinbase(n, 2), 5);	// logN2 = ceil(log2^2(n))
 	/*
-	int lgN2 = ceil(pow(mpz_sizeinbase(n, 2) - 1, 2));	// logN2 = ceil(log2^2(n))
 	char clgN2[10];
 	sprintf_s(clgN2, "%d", lgN2);
 
 	cout << "here" << clgN2;
 	mpz_set_str(mod, clgN2, 10); // logN2  =log2^2(n)
-	  */
+	 */ 
 
 
 
-	//mpz_init_set_str(mod, "66", 10);
-	//mpz_init_set_str(one, "", 10);
+	mpz_init_set_str(mod, "49", 10);
+	mpz_init_set_str(one, "1", 10);
 	//int logN2 = ceil(pow(mpz_sizeinbase(n, 2) - 1, 2));
 	//cout << "here";
-	bool found = getMinR(r, n);
+	getMinR(r, n);
 	//cout << "here";
 	//cout << endl << logN2;
 	
@@ -52,10 +53,10 @@ int main()
 	}
 	  */
 	//mpz_clears(n, k, mod, one, powr, NULL	);
-	
+	mpz_invert(one, n, mod);
 	//getOrder(k, n, mod);
-	gmp_printf("\n Ok: %Zd and powr", r);
-	cout << "Found :" << found;
+	gmp_printf("\n Ok: %Zd and powr", one);
+//	cout << "Found :" << found << " logn2 :" << lgN2;
 	getchar();
 	getchar();
 	return 0;
