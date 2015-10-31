@@ -205,7 +205,7 @@ bool gcdExists(const mpz_t number, const mpz_t r)
 		mpz_gcd(gcd, a, number);
 
 		#ifdef PRINTVALS
-		gmp_printf("\n%Zd\) a : %Zd, gcd : %Zd", a, gcd);
+		gmp_printf("\n%Zd\) a : %Zd, gcd : %Zd", a, a, gcd);
 		#endif
 
 		if (mpz_cmp(gcd, one) != 0)	// if(gcd != 1)
@@ -213,6 +213,8 @@ bool gcdExists(const mpz_t number, const mpz_t r)
 			mpz_clears(gcd, one, a, NULL);
 			return true;			// exists
 		}
+		
+		mpz_add(a, a, one); // a += 1
 	}
 
 	return false;	// does not exist
