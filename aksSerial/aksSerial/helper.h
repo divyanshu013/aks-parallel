@@ -12,7 +12,7 @@
  * 3> 28/10/2015: *Changes in getOrder(), addition of new parameter logN2
  *				  *Addition of gcdExists() function
  * 4> 29/10/2015: *Changes in getMinR(), change in return type
- * 5) 31/10/2015: *
+ * 5) 31/10/2015: *Addition of congruenceExists()
  */
 
 #ifndef HELPER_H
@@ -79,12 +79,13 @@ bool gcdExists(const mpz_t number, const mpz_t r);
 //-------------------------------------------------------------------------//
 
 /*
-* gcdExists() - This function checks if 1 < (a, n) < n for a <=r
+* congruenceExists() - This function checks if (X + a)^n iseqv to (X^n + a)
+* mod(X^r - 1, n). 
 *
 * parameters : number (mpz_t) - the number to be tested
 *              r (mpz_t) - the value of r
-* return : if gcd exists or not (bool) - true if exist and false otherwise
+* return : if congruence exists or not (bool) - true if exist and false otherwise
 */
-bool gcdExists(const mpz_t number, const mpz_t r);
+bool congruenceExists(const mpz_t number, const mpz_t r);
 
 #endif
