@@ -80,7 +80,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>E:\Source\libs\ntlLib\withGmp;E:\Source\libs\mpirLib;$(IncludePath)</IncludePath>
+    <IncludePath>E:\Source\libArchives\WinNTL-9_5_0\WinNTL-9_5_0\include;E:\Source\libs\mpirLib;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

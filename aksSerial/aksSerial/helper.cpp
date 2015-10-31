@@ -14,6 +14,7 @@
  *				   was not required.
  *				  *Addition and implentation of gcdExists() funtion
  * 5> 29/10/2015: *Changes in getMinR(), change in return type
+ * 6> 31/10/2015: *Rectified a bug in gcdExists()
  */
 
 #include "helper.h"

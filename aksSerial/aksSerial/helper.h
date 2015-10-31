@@ -12,6 +12,7 @@
  * 3> 28/10/2015: *Changes in getOrder(), addition of new parameter logN2
  *				  *Addition of gcdExists() function
  * 4> 29/10/2015: *Changes in getMinR(), change in return type
+ * 5) 31/10/2015: *
  */
 
 #ifndef HELPER_H
@@ -19,6 +20,7 @@
 
 #include <iostream>
 #include <mpir.h>
+#include <NTL/ZZ_pX.h>
 
 #define PRINTFUNC		// Uncommnet it to know the entry/exit in functions
 #define PRINTVALS		// Uncomment it to print values in funtions
@@ -62,6 +64,17 @@ void getOrder(mpz_t k, const mpz_t number, const mpz_t r, const mpz_t logN2);
  * return : void
  */
 void getMinR(mpz_t r, const mpz_t number);
+
+//-------------------------------------------------------------------------//
+
+/*
+* gcdExists() - This function checks if 1 < (a, n) < n for a <=r
+*
+* parameters : number (mpz_t) - the number to be tested
+*              r (mpz_t) - the value of r
+* return : if gcd exists or not (bool) - true if exist and false otherwise
+*/
+bool gcdExists(const mpz_t number, const mpz_t r);
 
 //-------------------------------------------------------------------------//
 
