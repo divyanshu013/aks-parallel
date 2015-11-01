@@ -13,6 +13,7 @@
  *				  *Addition of gcdExists() function
  * 4> 29/10/2015: *Changes in getMinR(), change in return type
  * 5) 31/10/2015: *Addition of congruenceExists()
+ *				  *Addition of reduceExponents()
  */
 
 #ifndef HELPER_H
@@ -20,11 +21,16 @@
 
 #include <iostream>
 #include <mpir.h>
+#include <NTL/tools.h>
+#include <NTL/ZZ_p.h>
 #include <NTL/ZZ_pX.h>
 
 #define PRINTFUNC		// Uncommnet it to know the entry/exit in functions
 #define PRINTVALS		// Uncomment it to print values in funtions
 #define LOGSIZE 200		// size of log buffer
+#define NSIZE 20		// size of buffer for storing n
+
+NTL_CLIENT
 
 /* 
  * isPower() - This function checks if given number is a perfect power or not
@@ -75,6 +81,17 @@ void getMinR(mpz_t r, const mpz_t number);
 * return : if gcd exists or not (bool) - true if exist and false otherwise
 */
 bool gcdExists(const mpz_t number, const mpz_t r);
+
+//-------------------------------------------------------------------------//
+
+/*
+* reduceExponents() - This function reduces the exponents mod r
+*
+* parameters : poly (ZZ_pX) - the polynomial
+*              r (ZZ) - the value of r
+* return : void
+*/
+void reduceExponents(ZZ_pX &p, const ZZ &r);
 
 //-------------------------------------------------------------------------//
 
