@@ -220,3 +220,136 @@ bool gcdExists(const mpz_t number, const mpz_t r)
 
 	return false;	// does not exist
 }
+
+//-------------------------------------------------------------------------//
+
+/*
+* reduceExponents() - This function reduces the exponents mod r
+*
+* parameters : poly (ZZ_pX) - the polynomial
+*              r (ZZ) - the value of r
+* return : void
+* 
+* Implementation :
+*/
+void reduceExponents(ZZ_pX &p, const ZZ &r)
+{
+	#ifdef PRINTFUNC
+	std::cout << "\n>>Entered reduceExponents()";
+	#endif
+	
+	long i = deg(p);
+	long rl;
+	long i_mod_r;
+	ZZ_p c;			// value of current (high-order) coefficient
+	ZZ_p newc;		// value to put into new (low-order) coefficient
+
+	// But we need R as a long!
+	// WARNING: Truncates without checking length first.
+	conv(rl, r);
+
+	while (i >= rl) 
+	{
+		c = coeff(p, i);
+		if (!IsZero(c)) 
+		{
+			i_mod_r = i % rl;
+
+			newc = coeff(p, i_mod_r);	// Add the value of the high-order coefficient to that of the
+			add(newc, newc, c);			// equivalent (mod r) low-order coefficient
+
+			// Update the value of the low-order coefficient and clear the high-order one
+			SetCoeff(p, i % rl, newc);
+			SetCoeff(p, i, 0);
+		}
+		i--;
+	}
+}
+
+//-------------------------------------------------------------------------//
+
+/*
+* congruenceExists() - This function checks if (X + a)^n iseqv to (X^n + a)
+* mod(X^r - 1, n).
+*
+* parameters : number (mpz_t) - the number to be tested
+*              r (mpz_t) - the value of r
+* return : if congruence exists or not (bool) - true if exist and false otherwise
+* 
+* Implementation:
+*/
+bool congruenceExists(const mpz_t gnumber, const mpz_t gr)
+{
+	#ifdef PRINTFUNC
+	std::cout << "\n>>Entered congruenceExists()";
+	#endif
+
+	char cNumber[NSIZE],	// char rep of n
+		 cR[NSIZE];			// and r
+    
+	gmp_sprintf(cNumber, "%Zd", gnumber);
+	gmp_sprintf(cR, "%Zd", gr);
+
+	ZZ N = conv<ZZ>(cNumber);
+	ZZ r = conv<ZZ>(cR);
+
+	ZZ_p::init(N);
+
+	ZZ n_mod_r;
+	ZZ_pX left;
+	ZZ_pX right;
+	long leadingCoeff;
+	bool isPrime;
+	long bitlength;
+	ZZ_pX base;
+	long al;		// a represented as a long
+	long amax;
+
+	long sqrt_r_log_n;
+	long log_n = NumBits(N);
+
+
+	// Find sqrt(r) * log(n)
+	conv(sqrt_r_log_n, r);
+	sqrt_r_log_n = sqrt(sqrt_r_log_n);
+	sqrt_r_log_n *= log_n;
+
+	bitlength = NumBits(N);
+	amax = floor(sqrt_r_log_n);
+	isPrime = true;
+
+	for (auto a = 1; a < amax; a++) 
+	{
+		conv(al, a);
+
+		SetCoeff(base, 1, 1);
+		SetCoeff(base, 0, al);
+
+		// Perform the exponentiation  (x + 1)^n
+		left = 1;
+
+		for (long u = bitlength; u != 0; u--) 
+		{
+			sqr(left, left);
+
+			if (bit(N, u - 1) == 1) 
+			{
+				mul(left, left, base);
+			}
+			reduceExponents(left, r);
+		}
+
+		// Build the right side and perform the final comparison
+		rem(n_mod_r, N, r);
+		leadingCoeff = trunc_long(n_mod_r, 32); // BUG: Taking low-order 32 bits of r.
+		SetCoeff(right, 0, al);
+		SetCoeff(right, leadingCoeff, 1);
+
+		if (left != right) 
+		{
+			isPrime = false;
+		}
+	}
+	
+	return isPrime;
+}
