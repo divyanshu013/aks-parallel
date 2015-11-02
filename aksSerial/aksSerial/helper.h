@@ -10,10 +10,10 @@
  * 2> 20/10/2015: Addition of getOrder() function
  *                Addition of getMinR() function
  * 3> 28/10/2015: *Changes in getOrder(), addition of new parameter logN2
- *				  *Addition of gcdExists() function
+ *				        *Addition of gcdExists() function
  * 4> 29/10/2015: *Changes in getMinR(), change in return type
  * 5) 31/10/2015: *Addition of congruenceExists()
- *				  *Addition of reduceExponents()
+ *				        *Addition of reduceExponents()
  */
 
 #ifndef HELPER_H
@@ -28,7 +28,7 @@
 #define PRINTFUNC		// Uncommnet it to know the entry/exit in functions
 #define PRINTVALS		// Uncomment it to print values in funtions
 #define LOGSIZE 200		// size of log buffer
-#define NSIZE 20		// size of buffer for storing n
+#define NSIZE 20		  // size of buffer for storing n
 
 NTL_CLIENT
 
@@ -52,8 +52,8 @@ bool isPower(const mpz_t number);
  *
  * parameters : k (mpz_t) - the value of k is stored in this var
  *              number (mpz_t) - the number to be tested
- *			    r (mpz_t) - the number for modulus
- *				logN2 (mpz_t) - the max limit for k
+ *			        r (mpz_t) - the number for modulus
+ *				      logN2 (mpz_t) - the max limit for k
  * return : void
  */
 void getOrder(mpz_t k, const mpz_t number, const mpz_t r, const mpz_t logN2);
