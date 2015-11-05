@@ -17,6 +17,7 @@
  * 6> 31/10/2015: *Rectified a bug in gcdExists()
  * 7> 1/11/2015: *Addition of reduceExponents() function
  *		 *Addition of congruenceExists() function
+ * 8> 5/11/2015: *Addition of a separate test.cpp file
  */
 
 #include "helper.h"
