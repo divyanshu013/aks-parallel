@@ -28,7 +28,8 @@
 #define PRINTFUNC		// Uncommnet it to know the entry/exit in functions
 #define PRINTVALS		// Uncomment it to print values in funtions
 #define LOGSIZE 200		// size of log buffer
-#define NSIZE 20		// size of buffer for storing n
+#define NSIZE 20		// size of buffer for storing 
+//#define LINUX         // uncomment for compilation in linux environment
 
 NTL_CLIENT
 
