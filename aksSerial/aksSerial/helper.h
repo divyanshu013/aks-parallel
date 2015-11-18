@@ -12,8 +12,9 @@
  * 3> 28/10/2015: *Changes in getOrder(), addition of new parameter logN2
  *				  *Addition of gcdExists() function
  * 4> 29/10/2015: *Changes in getMinR(), change in return type
- * 5) 31/10/2015: *Addition of congruenceExists()
+ * 5> 31/10/2015: *Addition of congruenceExists()
  *				  *Addition of reduceExponents()
+ * 6> 18/11/2015: *Added compatibility fix for linux
  */
 
 #ifndef HELPER_H
