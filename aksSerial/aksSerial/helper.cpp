@@ -15,6 +15,7 @@
  *				  *Addition and implentation of gcdExists() funtion
  * 5> 29/10/2015: *Changes in getMinR(), change in return type
  * 6> 31/10/2015: *Rectified a bug in gcdExists()
+ * 7> 18/11/2015: *Added compatibility fix for linux
  */
 
 #include "helper.h"
@@ -133,12 +134,21 @@ void getMinR(mpz_t r, const mpz_t number)
 	int lgN = mpz_sizeinbase(number, 2);
 	int lgN2 = pow(lgN, 2);	// logN2 = ceil(log2^2(n))
 	char clgN2[LOGSIZE];
+
+    #ifdef LINUX
+    sprintf(clgN2, "%d", lgN2);
+    #else
 	_itoa_s(lgN2, clgN2, 10);
-	mpz_init_set_str(logN2, clgN2, 10);	// logN2  =log2^2(n)
+	#endif
+    mpz_init_set_str(logN2, clgN2, 10);	// logN2  =log2^2(n)
 
 	int lgN5 = pow(lgN, 5);	// logN5 = ceil(log2^5(n))
 	char clgN5[LOGSIZE];
+    #ifdef LINUX
+    sprintf(clgN5, "%d", lgN5);
+    #else
 	_itoa_s(lgN5, clgN5, 10);
+    #endif
 	mpz_init_set_str(logN5, clgN5, 10);	// logN5  =log2^5(n)
 
 	mpz_init_set_str(r, "3", 10);		// r = 3
