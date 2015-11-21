@@ -10,12 +10,15 @@
  * 2> 20/10/2015: Addition of getMinR() function
  * 3> 26/10/2015: Implemented getMinR() function
  * 4> 28/10/2015: *Changes in getOrder(), addition of new parameter logN2,
- *				   gcd calculation step was removed as it was redundant and
- *				   was not required.
- *				  *Addition and implentation of gcdExists() funtion
+ *		   gcd calculation step was removed as it was redundant and
+ *		   was not required.
+ *		  *Addition and implentation of gcdExists() funtion
  * 5> 29/10/2015: *Changes in getMinR(), change in return type
  * 6> 31/10/2015: *Rectified a bug in gcdExists()
- * 7> 18/11/2015: *Added compatibility fix for linux
+ * 7> 1/11/2015: *Addition of reduceExponents() function
+ *		 *Addition of congruenceExists() function
+ * 8> 5/11/2015: *Addition of a separate test.cpp file
+ * 9> 18/11/2015: *Added compatibility fix for linux
  */
 
 #include "helper.h"
@@ -52,8 +55,8 @@ bool isPower(const mpz_t number)
  *
  * parameters : k (mpz_t) - the value of k is stored in this var
  *              number (mpz_t) - the number to be tested
- *			    r (mpz_t) - the number for modulus
- *				logN2 (mpz_t) - the max limit for k
+ *		r (mpz_t) - the number for modulus
+ *		logN2 (mpz_t) - the max limit for k
  * return : void
  *
  * Implementation - It is implemented currently using the MPIR libray funtion
@@ -68,15 +71,15 @@ void getOrder(mpz_t k, const mpz_t number, const mpz_t r, const mpz_t logN2)
 	gmp_printf("\nIn getOrder() Number : %Zd, r : %Zd", number, r);
 	#endif
 
-	mpz_t one,						// the value 1 in mpz_t
-		powr;						// for storing n^k
-									//nModR,
-									//kModR;
+	mpz_t one,	// the value 1 in mpz_t
+	      powr;	// for storing n^k
+	      //nModR,
+	      //kModR;
 
 	mpz_init_set_str(k, "1", 10);	// initialize k to 1
 	mpz_init_set_str(one, "1", 10);	// initialize one to 1
-									//mpz_init_set_str(nModR, "0", 10);	
-									//mpz_init_set_str(kModR, "0", 10);	
+	//mpz_init_set_str(nModR, "0", 10);	
+	//mpz_init_set_str(kModR, "0", 10);	
 	mpz_init_set(powr, number);		// initialize to given number
 
 	while (true)
@@ -84,7 +87,7 @@ void getOrder(mpz_t k, const mpz_t number, const mpz_t r, const mpz_t logN2)
 		//mpz_mod(nModR, number, r);
 		//mpz_mod(kModR, k, r);
 		mpz_powm(powr, number, k, r); // n^k mod r
-									  //mpz_powm(powr, nModR, kModR, r); // n^k mod r
+		//mpz_powm(powr, nModR, kModR, r); // n^k mod r
 
 		#ifdef PRINTVALS
 		gmp_printf("\nK : %Zd, powr : %Zd, log2N %Zd", k, powr, logN2);
@@ -126,13 +129,13 @@ void getMinR(mpz_t r, const mpz_t number)
 	#endif
 
 	mpz_t one,
-		k,		// for k
-		logN2,	// for log2^2(n)
-		logN5,
-		gcd;	// for gcd
+	      k,	// for k
+	      logN2,	// for log2^2(n)
+	      logN5,
+	      gcd;	// for gcd
 
 	int lgN = mpz_sizeinbase(number, 2);
-	int lgN2 = pow(lgN, 2);	// logN2 = ceil(log2^2(n))
+	int lgN2 = pow(lgN, 2);			// logN2 = ceil(log2^2(n))
 	char clgN2[LOGSIZE];
 
     #ifdef LINUX
@@ -142,7 +145,7 @@ void getMinR(mpz_t r, const mpz_t number)
 	#endif
     mpz_init_set_str(logN2, clgN2, 10);	// logN2  =log2^2(n)
 
-	int lgN5 = pow(lgN, 5);	// logN5 = ceil(log2^5(n))
+	int lgN5 = pow(lgN, 5);			// logN5 = ceil(log2^5(n))
 	char clgN5[LOGSIZE];
     #ifdef LINUX
     sprintf(clgN5, "%d", lgN5);
@@ -169,7 +172,7 @@ void getMinR(mpz_t r, const mpz_t number)
 			gmp_printf("\nGCD found != 1, and = %Zd", gcd, k);
 			#endif
 			
-			mpz_add(r, r, one);		// r += 1
+			mpz_add(r, r, one);	// r += 1
 			continue;
 		}
 		
@@ -184,7 +187,7 @@ void getMinR(mpz_t r, const mpz_t number)
 			return;
 		}
 
-		mpz_add(r, r, one);		// r += 1
+		mpz_add(r, r, one);	// r += 1
 	}
 }
 
@@ -266,7 +269,7 @@ void reduceExponents(ZZ_pX &p, const ZZ &r)
 			i_mod_r = i % rl;
 
 			newc = coeff(p, i_mod_r);	// Add the value of the high-order coefficient to that of the
-			add(newc, newc, c);			// equivalent (mod r) low-order coefficient
+			add(newc, newc, c);		// equivalent (mod r) low-order coefficient
 
 			// Update the value of the low-order coefficient and clear the high-order one
 			SetCoeff(p, i % rl, newc);
@@ -295,7 +298,7 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr)
 	#endif
 
 	char cNumber[NSIZE],	// char rep of n
-		 cR[NSIZE];			// and r
+	     cR[NSIZE];		// and r
     
 	gmp_sprintf(cNumber, "%Zd", gnumber);
 	gmp_sprintf(cR, "%Zd", gr);
@@ -312,7 +315,7 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr)
 	bool isPrime;
 	long bitlength;
 	ZZ_pX base;
-	long al;		// a represented as a long
+	long al;	// a represented as a long
 	long amax;
 
 	long sqrt_r_log_n;
