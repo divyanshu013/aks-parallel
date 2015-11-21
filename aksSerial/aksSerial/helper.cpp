@@ -10,13 +10,13 @@
  * 2> 20/10/2015: Addition of getMinR() function
  * 3> 26/10/2015: Implemented getMinR() function
  * 4> 28/10/2015: *Changes in getOrder(), addition of new parameter logN2,
- *		   gcd calculation step was removed as it was redundant and
- *		   was not required.
- *		  *Addition and implentation of gcdExists() funtion
+ *                 gcd calculation step was removed as it was redundant and
+ *		           was not required.
+ *                 *Addition and implentation of gcdExists() funtion
  * 5> 29/10/2015: *Changes in getMinR(), change in return type
  * 6> 31/10/2015: *Rectified a bug in gcdExists()
- * 7> 1/11/2015: *Addition of reduceExponents() function
- *		 *Addition of congruenceExists() function
+ * 7> 1/11/2015:  *Addition of reduceExponents() function
+ *		          *Addition of congruenceExists() function
  * 8> 5/11/2015: *Addition of a separate test.cpp file
  * 9> 18/11/2015: *Added compatibility fix for linux
  */
