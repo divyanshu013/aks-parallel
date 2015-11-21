@@ -15,7 +15,6 @@
  * 5> 31/10/2015: *Addition of congruenceExists()
  *				  *Addition of reduceExponents()
  * 6> 18/11/2015: *Added compatibility fix for linux
-
  */
 
 #ifndef HELPER_H
@@ -107,5 +106,15 @@ void reduceExponents(ZZ_pX &p, const ZZ &r);
 * return : if congruence exists or not (bool) - true if exist and false otherwise
 */
 bool congruenceExists(const mpz_t number, const mpz_t r);
+
+//-------------------------------------------------------------------------//
+
+/*
+* aksLnP() - This function runs the aks algorithm improved by Lenstra and Pomerance
+*
+* parameters : number (mpz_t) - the number to be tested
+* return : if prime or not (bool) - true if prime and false otherwise
+*/
+bool aksLnP(const mpz_t number);
 
 #endif
