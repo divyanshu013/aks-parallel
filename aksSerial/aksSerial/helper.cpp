@@ -19,6 +19,7 @@
  *		          *Addition of congruenceExists() function
  * 8> 5/11/2015: *Addition of a separate test.cpp file
  * 9> 18/11/2015: *Added compatibility fix for linux
+ *10> 27/11/2015: *Added defination of aksLnP()
  */
 
 #include "helper.h"
@@ -199,6 +200,8 @@ void getMinR(mpz_t r, const mpz_t number)
 * parameters : number (mpz_t) - the number to be tested
 *              r (mpz_t) - the value of r
 * return : if gcd exists or not (bool) - true if exist and false otherwise
+*
+* Implementation: #TODO complete it
 */
 bool gcdExists(const mpz_t number, const mpz_t r)
 {
@@ -243,7 +246,7 @@ bool gcdExists(const mpz_t number, const mpz_t r)
 *              r (ZZ) - the value of r
 * return : void
 * 
-* Implementation :
+* Implementation : #TODO complete it
 */
 void reduceExponents(ZZ_pX &p, const ZZ &r)
 {
@@ -289,7 +292,7 @@ void reduceExponents(ZZ_pX &p, const ZZ &r)
 *              r (mpz_t) - the value of r
 * return : if congruence exists or not (bool) - true if exist and false otherwise
 * 
-* Implementation:
+* Implementation: #TODO complete it
 */
 bool congruenceExists(const mpz_t gnumber, const mpz_t gr)
 {
@@ -365,4 +368,19 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr)
 	}
 	
 	return isPrime;
+}
+
+//-------------------------------------------------------------------------//
+
+/*
+* aksLnP() - This function runs the aks algorithm improved by Lenstra and Pomerance
+*
+* parameters : number (mpz_t) - the number to be tested
+* return : if prime or not (bool) - true if prime and false otherwise
+*
+* Implementation: #TODO complete it
+*/
+bool aksLnP(const mpz_t number)
+{
+
 }
