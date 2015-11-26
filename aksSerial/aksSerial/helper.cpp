@@ -300,8 +300,8 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr)
 	std::cout << "\n>>Entered congruenceExists()";
 	#endif
 
-	char cNumber[NSIZE],	// char rep of n
-	     cR[NSIZE];		// and r
+	char cNumber[NSIZE],    // char rep of n
+	     cR[NSIZE];         // and r
     
 	gmp_sprintf(cNumber, "%Zd", gnumber);
 	gmp_sprintf(cR, "%Zd", gr);
@@ -334,7 +334,7 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr)
 	amax = floor(sqrt_r_log_n);
 	isPrime = true;
 
-	for (auto a = 1; a < amax; a++) 
+	for (int a = 1; a < amax; a++) 
 	{
 		conv(al, a);
 
@@ -363,11 +363,11 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr)
 
 		if (left != right) 
 		{
-			isPrime = false;
+			return false;       // does't exist
 		}
 	}
 	
-	return isPrime;
+	return true ; // exists
 }
 
 //-------------------------------------------------------------------------//
@@ -382,5 +382,39 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr)
 */
 bool aksLnP(const mpz_t number)
 {
+     mpz_t r;       // r value
 
+     // Check for perfect power
+     if (isPower(number))
+     {
+         cout << "Not prime because perfect power";
+         return false;  // composite
+     }
+
+     // get value of r
+     getMinR(r, number);
+
+     // check for GCD
+     if (gcdExists(number, r))
+     {
+         cout << "Not prime because gcd present";
+         return false;  // composite
+     }
+
+     // check if number <= r
+     if (mpz_cmp(r, number) >= 0)
+     {
+         cout << "Not prime because r >= n";
+         return false;  // composite, condition in algorithm
+     }
+
+     // check for congruence
+     if (!congruenceExists(number, r))
+     {
+         cout << "Not prime because congruence does not exists";
+         return false;  // composite
+     }
+
+     // passed all tests, so prime
+     return true;
 }
