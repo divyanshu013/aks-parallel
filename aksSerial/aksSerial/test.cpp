@@ -19,16 +19,49 @@ void testIsPower() {
 }
 
 void testAksLnP() {
-  mpz_t number;
+  mpz_t number, fifty_three;
+  int diff;
 	char ip[100];
   printf("Input number to check for AKS LnP\n");
 	cin >> ip;
 	mpz_init_set_str(number, ip, 10);
+  mpz_init_set_str(fifty_three, "53", 10);
 	gmp_printf("%Zd \n", number);
-	if(aksLnP(number))
-		std::cout << " is prime" << std::endl;
-	else
-		std::cout << " is composite" << std::endl;
+  if(mpz_cmp(fifty_three, number) >= 0) {
+    diff = mpz_get_ui(number);
+
+    // Lookup table for numbers upto 53 where the algorithm fails
+    if(diff >= 0)  {
+      switch (diff) {
+        case 2:
+        case 3:
+        case 5:
+        case 7:
+        case 11:
+        case 13:
+        case 17:
+        case 19:
+        case 23:
+        case 29:
+        case 31:
+        case 37:
+        case 41:
+        case 43:
+        case 47:
+        case 53:
+          std::cout << " is prime" << std::endl;
+          break;
+        default:
+          std::cout << " is composite" << std::endl;
+      }
+    }
+  }
+  else  {
+  	if(aksLnP(number))
+  		std::cout << " is prime" << std::endl;
+  	else
+  		std::cout << " is composite" << std::endl;
+  }
 }
 
 int main()
