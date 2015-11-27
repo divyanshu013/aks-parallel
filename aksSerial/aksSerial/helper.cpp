@@ -382,12 +382,28 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr)
 */
 bool aksLnP(const mpz_t number)
 {
+     #ifdef PRINTFUNC
+     std::cout << "\n>>Entered congruenceExists()";
+     #endif
+     
+     // Check for small primes
+     char cNumber[NSIZE];
+     int iNumber;
+     gmp_sprintf(cNumber, "%Zd", number);
+     iNumber = atoi(cNumber);
+     if(iNumber == 2 || iNumber == 3 || iNumber == 5 || iNumber == 7 || iNumber == 11 ||
+        iNumber == 13 || iNumber == 17 || iNumber == 19 || iNumber == 23 || iNumber == 29)
+        return true;
+
      mpz_t r;       // r value
 
      // Check for perfect power
      if (isPower(number))
      {
+         #ifdef PRINTVALS
          cout << "Not prime because perfect power";
+         #endif
+
          return false;  // composite
      }
 
@@ -397,21 +413,30 @@ bool aksLnP(const mpz_t number)
      // check for GCD
      if (gcdExists(number, r))
      {
+         #ifdef PRINTVALS
          cout << "Not prime because gcd present";
+         #endif
+
          return false;  // composite
      }
 
      // check if number <= r
      if (mpz_cmp(r, number) >= 0)
      {
+         #ifdef PRINTVALS
          cout << "Not prime because r >= n";
+         #endif
+         
          return false;  // composite, condition in algorithm
      }
 
      // check for congruence
      if (!congruenceExists(number, r))
      {
+         #ifdef PRINTVALS
          cout << "Not prime because congruence does not exists";
+         #endif
+         
          return false;  // composite
      }
 
