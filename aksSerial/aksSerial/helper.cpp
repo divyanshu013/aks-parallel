@@ -378,14 +378,15 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr)
 * parameters : number (mpz_t) - the number to be tested
 * return : if prime or not (bool) - true if prime and false otherwise
 *
-* Implementation: #TODO complete it
+* Implementation: This funciton implements the Lenstra and Pomerance improved AKS algorithm
 */
 bool aksLnP(const mpz_t number)
 {
      #ifdef PRINTFUNC
      std::cout << "\n>>Entered congruenceExists()";
      #endif
-     
+    
+     /* Don't check here for the time being
      // Check for small primes
      char cNumber[NSIZE];
      int iNumber;
@@ -394,6 +395,7 @@ bool aksLnP(const mpz_t number)
      if(iNumber == 2 || iNumber == 3 || iNumber == 5 || iNumber == 7 || iNumber == 11 ||
         iNumber == 13 || iNumber == 17 || iNumber == 19 || iNumber == 23 || iNumber == 29)
         return true;
+     */
 
      mpz_t r;       // r value
 
