@@ -75,6 +75,7 @@ void testAksLnP() {
   mpz_init_set_str(fifty_three, "53", 10);
 	gmp_printf("%Zd \n", number);
   //clock();
+  uint64 time_before = GetTimeMs64();
   if(mpz_cmp(fifty_three, number) >= 0) {
     diff = mpz_get_ui(number);
 
@@ -110,9 +111,9 @@ void testAksLnP() {
   	else
   		std::cout << " is composite" << std::endl;
   }
-  clock();
-  uint64 exec_time = GetTimeMs64();
-  printf("Execution Time is %llu ms\n", exec_time);
+  //clock();
+  uint64 time_after = GetTimeMs64();
+  printf("Execution Time is %llu ms\n", (time_after - time_before));
 }
 
 int main()
