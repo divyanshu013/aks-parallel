@@ -2,6 +2,53 @@
 #include "helper.h"
 #include <cmath>
 #include <cstring>
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <sys/time.h>
+#include <ctime>
+#endif
+
+typedef long long int64;
+typedef unsigned long long uint64;
+
+/* Returns the amount of milliseconds elapsed since the UNIX epoch. Should work on both
+ * windows and linux. TODO Check on Windows*/
+
+uint64 GetTimeMs64()
+{
+  #ifdef _WIN32
+  /* Windows */
+  FILETIME ft;
+  LARGE_INTEGER li;
+
+  /* Get the amount of 100 nano seconds intervals elapsed since January 1, 1601 (UTC) and copy it
+   * to a LARGE_INTEGER structure. */
+  GetSystemTimeAsFileTime(&ft);
+  li.LowPart = ft.dwLowDateTime;
+  li.HighPart = ft.dwHighDateTime;
+
+  uint64 ret = li.QuadPart;
+  ret -= 116444736000000000LL; /* Convert from file time to UNIX epoch time. */
+  ret /= 10000; /* From 100 nano seconds (10^-7) to 1 millisecond (10^-3) intervals */
+
+  return ret;
+  #else
+  /* Linux */
+  struct timeval tv;
+
+  gettimeofday(&tv, NULL);
+
+  uint64 ret = tv.tv_usec;
+  /* Convert from micro seconds (10^-6) to milliseconds (10^-3) */
+  ret /= 1000;
+
+  /* Adds the seconds (10^0) after converting them to milliseconds (10^-3) */
+  ret += (tv.tv_sec * 1000);
+
+  return ret;
+  #endif
+}
 
 using namespace std;
 
@@ -27,6 +74,7 @@ void testAksLnP() {
 	mpz_init_set_str(number, ip, 10);
   mpz_init_set_str(fifty_three, "53", 10);
 	gmp_printf("%Zd \n", number);
+  //clock();
   if(mpz_cmp(fifty_three, number) >= 0) {
     diff = mpz_get_ui(number);
 
@@ -62,6 +110,9 @@ void testAksLnP() {
   	else
   		std::cout << " is composite" << std::endl;
   }
+  clock();
+  uint64 exec_time = GetTimeMs64();
+  printf("Execution Time is %llu ms\n", exec_time);
 }
 
 int main()
