@@ -21,6 +21,7 @@
  * 9> 18/11/2015: *Addition of compatibility fix for linux
  *10> 27/11/2015: *Addition of defination of aksLnP()
  *11> 12/12/2015: *Addition of defination of ParallelWork() functor
+ *12> 12/12/2015: *Modified aksLnP() to aksLnPserial()
  */
 
 #include "helper.h"
@@ -345,81 +346,52 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr)
 	gmp_sprintf(cNumber, "%Zd", gnumber);
 	gmp_sprintf(cR, "%Zd", gr);
 
-	ZZ N = conv<ZZ>(cNumber);
+	ZZ number = conv<ZZ>(cNumber);
 	ZZ r = conv<ZZ>(cR);
 
-	ZZ_p::init(N);
+	ZZ_p::init(number);
 
-	ZZ n_mod_r;
+	ZZ nModR;
 	ZZ_pX left;
 	ZZ_pX right;
-	long leadingCoeff;
+	long leadCoeff;
 	bool isPrime;
-	long bitlength;
+	long bitLength;
 	ZZ_pX base;
-	long al;	// a represented as a long
-	long amax;
+	long aMax;
 
-	long sqrt_r_log_n;
-	long log_n = NumBits(N);
+	long sqrtRlogN;
+	long logN = NumBits(number);
 
+  	// Find sqrt(r) * log(n)
+	conv(sqrtRlogN, r);
+	sqrtRlogN = sqrt(sqrtRlogN);
+	sqrtRlogN *= logN;
 
-	// Find sqrt(r) * log(n)
-	conv(sqrt_r_log_n, r);
-	sqrt_r_log_n = sqrt(sqrt_r_log_n);
-	sqrt_r_log_n *= log_n;
-
-	bitlength = NumBits(N);
-	amax = floor(sqrt_r_log_n);
+	bitLength = NumBits(number);
+	aMax = floor(sqrtRlogN);
 	isPrime = true;
 
-	for (int a = 1; a < amax; a++) 
-	{
-		conv(al, a);
-
-		SetCoeff(base, 1, 1);
-		SetCoeff(base, 0, al);
-
-		// Perform the exponentiation  (x + 1)^n
-		left = 1;
-
-		for (long u = bitlength; u != 0; u--) 
-		{
-			sqr(left, left);
-
-			if (bit(N, u - 1) == 1) 
-			{
-				mul(left, left, base);
-			}
-			reduceExponents(left, r);
-		}
-
-		// Build the right side and perform the final comparison
-		rem(n_mod_r, N, r);
-		leadingCoeff = trunc_long(n_mod_r, 32); // BUG: Taking low-order 32 bits of r.
-		SetCoeff(right, 0, al);
-		SetCoeff(right, leadingCoeff, 1);
-
-		if (left != right) 
-		{
-			return false;       // does't exist
-		}
-	}
+    // Initialize and call the function
+	ParallelWork pFunct(bitLength, leadCoeff,
+                        base, left, right,
+                        nModR, number, r, &isPrime);
+    pFunct(1, aMax);
 	
-	return true ; // exists
+	return isPrime ; // exists
 }
 
 //-------------------------------------------------------------------------//
 
 /*
-* aksLnP() - This function runs the aks algorithm improved by Lenstra and Pomerance
+* aksLnPserial() - This function runs the aks algorithm improved by Lenstra and Pomerance
 *
 * parameters : number (mpz_t) - the number to be tested
 * return : if prime or not (bool) - true if prime and false otherwise
 *
 * Implementation: This funciton implements the Lenstra and Pomerance improved AKS algorithm
 */
-bool aksLnP(const mpz_t number)
+bool aksLnPserial(const mpz_t number)
 {
      #ifdef PRINTFUNC
      std::cout << "\n>>Entered congruenceExists()";
