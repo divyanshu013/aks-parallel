@@ -16,6 +16,7 @@
  *				  *Addition of reduceExponents()
  * 6> 18/11/2015: *Added compatibility fix for linux
  * 7> 12/12/2015: *Addition of ParallelWork() functor
+ * 8> 12/12/2015: *Modified aksLnP() to aksLnPserial()
  */
 
 #ifndef HELPER_H
@@ -120,8 +121,8 @@ class ParallelWork
     public:
     // Ctor, initialize the local data
     ParallelWork(long bitLen, long leadCoeff,
-        ZZ_pX Base, ZZ_pX Left, ZZ_pX Right,
-        ZZ nModr, ZZ num, ZZ R, bool *isprime)
+                 ZZ_pX Base, ZZ_pX Left, ZZ_pX Right,
+                 ZZ nModr, ZZ num, ZZ R, bool *isprime)
     : bitLength(bitLen), leadingCoeff(leadCoeff),
       base(Base), left(Left), right(Right),
       nModR(nModr), number(num), r(R), isPrime(isprime)
@@ -146,11 +147,11 @@ bool congruenceExists(const mpz_t number, const mpz_t r);
 //-------------------------------------------------------------------------//
 
 /*
-* aksLnP() - This function runs the aks algorithm improved by Lenstra and Pomerance
+* aksLnPserial() - This function runs the aks algorithm improved by Lenstra and Pomerance
 *
 * parameters : number (mpz_t) - the number to be tested
 * return : if prime or not (bool) - true if prime and false otherwise
 */
-bool aksLnP(const mpz_t number);
+bool aksLnPserial(const mpz_t number);
 
 #endif
