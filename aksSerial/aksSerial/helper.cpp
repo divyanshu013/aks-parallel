@@ -18,8 +18,9 @@
  * 7> 1/11/2015:  *Addition of reduceExponents() function
  *		          *Addition of congruenceExists() function
  * 8> 5/11/2015: *Addition of a separate test.cpp file
- * 9> 18/11/2015: *Added compatibility fix for linux
- *10> 27/11/2015: *Added defination of aksLnP()
+ * 9> 18/11/2015: *Addition of compatibility fix for linux
+ *10> 27/11/2015: *Addition of defination of aksLnP()
+ *11> 12/12/2015: *Addition of defination of ParallelWork() functor
  */
 
 #include "helper.h"
@@ -283,6 +284,44 @@ void reduceExponents(ZZ_pX &p, const ZZ &r)
 }
 
 //-------------------------------------------------------------------------//
+
+// Defination of ParallelWork() functor's function call operator
+void ParallelWork::operator () (int start, int end)
+{
+    ZZ_p::init(number);
+    long al;
+    for (int a = start; a <= end; a++)
+    {
+        conv(al, a);
+        SetCoeff(base, 1, 1);
+        SetCoeff(base, 0, al);
+
+        // Perform the exponentiation  (x + 1)^n
+        left = 1;
+
+        for (long u = bitLength; u != 0; u--)
+        {
+            sqr(left, left);
+
+            if (bit(number, u - 1) == 1)
+            {
+                mul(left, left, base);
+            }
+            reduceExponents(left, r);
+        }
+
+        // Build the right side and perform the final comparison
+        rem(nModR, number, r);
+        leadingCoeff = trunc_long(nModR, 32);
+        SetCoeff(right, 0, al);
+        SetCoeff(right, leadingCoeff, 1);
+
+        if (left != right)
+        {
+            *isPrime = false;   // does't exist
+        }
+    }
+}
 
 /*
 * congruenceExists() - This function checks if (X + a)^n iseqv to (X^n + a)

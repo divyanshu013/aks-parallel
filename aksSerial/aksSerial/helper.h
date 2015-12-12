@@ -15,6 +15,7 @@
  * 5> 31/10/2015: *Addition of congruenceExists()
  *				  *Addition of reduceExponents()
  * 6> 18/11/2015: *Added compatibility fix for linux
+ * 7> 12/12/2015: *Addition of ParallelWork() functor
  */
 
 #ifndef HELPER_H
@@ -94,6 +95,41 @@ bool gcdExists(const mpz_t number, const mpz_t r);
 * return : void
 */
 void reduceExponents(ZZ_pX &p, const ZZ &r);
+
+//-------------------------------------------------------------------------//
+
+/*
+* ParallelFunctor() - This is a c++ style functor, used in thread execution
+*
+* parameters : start (int) - the start of the range
+*              end (int) - the end of the range
+* return : void
+*/
+class ParallelWork
+{
+    long bitLength,
+        leadingCoeff;
+    ZZ_pX base,
+        left,
+        right;
+    bool *isPrime;
+    ZZ nModR,
+        number,
+        r;
+
+    public:
+    // Ctor, initialize the local data
+    ParallelWork(long bitLen, long leadCoeff,
+        ZZ_pX Base, ZZ_pX Left, ZZ_pX Right,
+        ZZ nModr, ZZ num, ZZ R, bool *isprime)
+    : bitLength(bitLen), leadingCoeff(leadCoeff),
+      base(Base), left(Left), right(Right),
+      nModR(nModr), number(num), r(R), isPrime(isprime)
+    {   }
+
+    // Overloaded function call operator
+    void operator () (int start, int end);
+};
 
 //-------------------------------------------------------------------------//
 
