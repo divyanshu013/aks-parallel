@@ -22,6 +22,7 @@
  *10> 27/11/2015: *Addition of defination of aksLnP()
  *11> 12/12/2015: *Addition of defination of ParallelWork() functor
  *12> 12/12/2015: *Modified aksLnP() to aksLnPserial()
+ *13> 12/12/2015: *Addition of defination of aksLnPparallel()
  */
 
 #include "helper.h"
@@ -455,4 +456,20 @@ bool aksLnPserial(const mpz_t number)
 
      // passed all tests, so prime
      return true;
+}
+
+//-------------------------------------------------------------------------//
+
+/*
+* aksLnPparallel() - This function runs the aks algorithm (parallel) improved
+* by Lenstra and Pomerance
+*
+* parameters : number (mpz_t) - the number to be tested
+* return : if prime or not (bool) - true if prime and false otherwise
+*
+* Implementation: #TODO for now
+*/
+bool aksLnPparallel(const mpz_t number)
+{
+    // #TODO write something here:D, leaving for tommorow
 }

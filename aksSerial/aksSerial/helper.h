@@ -17,6 +17,7 @@
  * 6> 18/11/2015: *Added compatibility fix for linux
  * 7> 12/12/2015: *Addition of ParallelWork() functor
  * 8> 12/12/2015: *Modified aksLnP() to aksLnPserial()
+ * 9> 12/12/2015: *Addition of aksLnPparallel()
  */
 
 #ifndef HELPER_H
@@ -153,5 +154,16 @@ bool congruenceExists(const mpz_t number, const mpz_t r);
 * return : if prime or not (bool) - true if prime and false otherwise
 */
 bool aksLnPserial(const mpz_t number);
+
+//-------------------------------------------------------------------------//
+
+/*
+* aksLnPparallel() - This function runs the aks algorithm (parallel) improved 
+* by Lenstra and Pomerance
+*
+* parameters : number (mpz_t) - the number to be tested
+* return : if prime or not (bool) - true if prime and false otherwise
+*/
+bool aksLnPparallel(const mpz_t number);
 
 #endif
