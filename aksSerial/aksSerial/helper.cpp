@@ -41,15 +41,15 @@
  */
 bool isPower(const mpz_t number)
 {
-	#ifdef PRINTFUNC
-	std::cout << "\n>>Entered isPower()";
-	#endif
-	#ifdef PRINTVALS
-	gmp_printf("\nNumber : %Zd", number);
-	#endif
-	
-	// return true if number is a perfect power
-	return (mpz_perfect_power_p(number) > 0 ? true : false);
+    #ifdef PRINTFUNC
+    std::cout << "\n>>Entered isPower()";
+    #endif
+    #ifdef PRINTVALS
+    gmp_printf("\nNumber : %Zd", number);
+    #endif
+    
+    // return true if number is a perfect power
+    return (mpz_perfect_power_p(number) > 0 ? true : false);
 }
 
 //-------------------------------------------------------------------------//
@@ -69,47 +69,47 @@ bool isPower(const mpz_t number)
  */
 void getOrder(mpz_t k, const mpz_t number, const mpz_t r, const mpz_t logN2)
 {
-	#ifdef PRINTFUNC
-	std::cout << "\n\n>>Entered getOrder()";
-	#endif
-	#ifdef PRINTVALS
-	gmp_printf("\nIn getOrder() Number : %Zd, r : %Zd", number, r);
-	#endif
+    #ifdef PRINTFUNC
+    std::cout << "\n\n>>Entered getOrder()";
+    #endif
+    #ifdef PRINTVALS
+    gmp_printf("\nIn getOrder() Number : %Zd, r : %Zd", number, r);
+    #endif
 
-	mpz_t one,	// the value 1 in mpz_t
-	      powr;	// for storing n^k
-	      //nModR,
-	      //kModR;
+    mpz_t one,	// the value 1 in mpz_t
+          powr;	// for storing n^k
+          //nModR,
+          //kModR;
 
-	mpz_init_set_str(k, "1", 10);	// initialize k to 1
-	mpz_init_set_str(one, "1", 10);	// initialize one to 1
-	//mpz_init_set_str(nModR, "0", 10);	
-	//mpz_init_set_str(kModR, "0", 10);	
-	mpz_init_set(powr, number);		// initialize to given number
+    mpz_init_set_str(k, "1", 10);	// initialize k to 1
+    mpz_init_set_str(one, "1", 10);	// initialize one to 1
+    //mpz_init_set_str(nModR, "0", 10);	
+    //mpz_init_set_str(kModR, "0", 10);	
+    mpz_init_set(powr, number);		// initialize to given number
 
-	while (true)
-	{
-		//mpz_mod(nModR, number, r);
-		//mpz_mod(kModR, k, r);
-		mpz_powm(powr, number, k, r); // n^k mod r
-		//mpz_powm(powr, nModR, kModR, r); // n^k mod r
+    while (true)
+    {
+        //mpz_mod(nModR, number, r);
+        //mpz_mod(kModR, k, r);
+        mpz_powm(powr, number, k, r); // n^k mod r
+        //mpz_powm(powr, nModR, kModR, r); // n^k mod r
 
-		#ifdef PRINTVALS
-		gmp_printf("\nK : %Zd, powr : %Zd, log2N %Zd", k, powr, logN2);
-		#endif
+        #ifdef PRINTVALS
+        gmp_printf("\nK : %Zd, powr : %Zd, log2N %Zd", k, powr, logN2);
+        #endif
 
-		if (mpz_cmp(powr, one) == 0)  // is powr == 1
-		{
-			#ifdef PRINTVALS
-			std::cout << std::endl;
-			#endif
+        if (mpz_cmp(powr, one) == 0)  // is powr == 1
+        {
+            #ifdef PRINTVALS
+            std::cout << std::endl;
+            #endif
 
-			mpz_clears(one, powr, NULL);
-			return;
-		}
-		else
-			mpz_add(k, k, one);
-	}
+            mpz_clears(one, powr, NULL);
+            return;
+        }
+        else
+            mpz_add(k, k, one);
+    }
 }
 
 //-------------------------------------------------------------------------//
@@ -129,71 +129,73 @@ void getOrder(mpz_t k, const mpz_t number, const mpz_t r, const mpz_t logN2)
  */
 void getMinR(mpz_t r, const mpz_t number)
 {
-	#ifdef PRINTFUNC
-	std::cout << "\n>>Entered getMinR()";
-	#endif
+    #ifdef PRINTFUNC
+    std::cout << "\n>>Entered getMinR()";
+    #endif
 
-	mpz_t one,
-	      k,	// for k
-	      logN2,	// for log2^2(n)
-	      logN5,
-	      gcd;	// for gcd
+    mpz_t one,
+          k,        // for k
+          logN2,    // for log2^2(n)
+          logN5,
+          gcd;      // for gcd
 
-	int lgN = mpz_sizeinbase(number, 2);
-	int lgN2 = pow(lgN, 2);			// logN2 = ceil(log2^2(n))
-	char clgN2[LOGSIZE];
+    int lgN = mpz_sizeinbase(number, 2);
+    int lgN2 = pow(lgN, 2);			// logN2 = ceil(log2^2(n))
+    char clgN2[LOGSIZE];
 
     #ifdef LINUX
     sprintf(clgN2, "%d", lgN2);
     #else
-	_itoa_s(lgN2, clgN2, 10);
-	#endif
-    mpz_init_set_str(logN2, clgN2, 10);	// logN2  =log2^2(n)
+    _itoa_s(lgN2, clgN2, 10);
+    #endif
+    
+    mpz_init_set_str(logN2, clgN2, 10); // logN2  =log2^2(n)
 
-	int lgN5 = pow(lgN, 5);			// logN5 = ceil(log2^5(n))
-	char clgN5[LOGSIZE];
+    int lgN5 = pow(lgN, 5);             // logN5 = ceil(log2^5(n))
+    char clgN5[LOGSIZE];
+
     #ifdef LINUX
     sprintf(clgN5, "%d", lgN5);
     #else
-	_itoa_s(lgN5, clgN5, 10);
+    _itoa_s(lgN5, clgN5, 10);
     #endif
-	mpz_init_set_str(logN5, clgN5, 10);	// logN5  =log2^5(n)
+    
+    mpz_init_set_str(logN5, clgN5, 10);	// logN5  =log2^5(n)
 
-	mpz_init_set_str(r, "3", 10);		// r = 3
-	mpz_init_set_str(gcd, "1", 10);
-	mpz_init_set_str(one, "1", 10);		// 1 in mpz_t
+    mpz_init_set_str(r, "3", 10);		// r = 3
+    mpz_init_set_str(gcd, "1", 10);
+    mpz_init_set_str(one, "1", 10);		// 1 in mpz_t
 
-	#ifdef PRINTVALS
-	gmp_printf("\nNumber : %Zd, r : %Zd, logN2 : %Zd, gcd : %Zd, one : %Zd\nIterations:", number, r, logN2, gcd, one);
-	#endif
+    #ifdef PRINTVALS
+    gmp_printf("\nNumber : %Zd, r : %Zd, logN2 : %Zd, gcd : %Zd, one : %Zd\nIterations:", number, r, logN2, gcd, one);
+    #endif
 
-	while (mpz_cmp(r, logN5) < 0)	// while(r < log2^5(n))
-	{
-		
-		mpz_gcd(gcd, r, number);
-		if (mpz_cmp(gcd, one) != 0)	// not prime
-		{
-			#ifdef PRINTVALS
-			gmp_printf("\nGCD found != 1, and = %Zd", gcd, k);
-			#endif
-			
-			mpz_add(r, r, one);	// r += 1
-			continue;
-		}
-		
-		getOrder(k, number, r, logN2);
+    while (mpz_cmp(r, logN5) < 0)	// while(r < log2^5(n))
+    {
+        mpz_gcd(gcd, r, number);
+        if (mpz_cmp(gcd, one) != 0)	// not prime
+        {
+            #ifdef PRINTVALS
+            gmp_printf("\nGCD found != 1, and = %Zd", gcd, k);
+            #endif
+            
+            mpz_add(r, r, one);	// r += 1
+            continue;
+        }
+        
+        getOrder(k, number, r, logN2);
 
-		#ifdef PRINTVALS
-		gmp_printf("\n%Zd\) Number : %Zd, r : %Zd, gcd : %Zd, k : %Zd", r, number, r, gcd, k);
-		#endif
+        #ifdef PRINTVALS
+        gmp_printf("\n%Zd\) Number : %Zd, r : %Zd, gcd : %Zd, k : %Zd", r, number, r, gcd, k);
+        #endif
 
-		if (mpz_cmp(k, logN2) > 0)
-		{
-			return;
-		}
+        if (mpz_cmp(k, logN2) > 0)
+        {
+            return;
+        }
 
-		mpz_add(r, r, one);	// r += 1
-	}
+        mpz_add(r, r, one);	// r += 1
+    }
 }
 
 //-------------------------------------------------------------------------//
@@ -211,36 +213,36 @@ void getMinR(mpz_t r, const mpz_t number)
 */
 bool gcdExists(const mpz_t number, const mpz_t r)
 {
-	#ifdef PRINTFUNC
-	std::cout << "\n>>Entered gcdExists()";
-	#endif
-	
-	mpz_t one,	// the value 1 in mpz_t
-          gcd,	// to store gcd
-          a;	// loop counter
+    #ifdef PRINTFUNC
+    std::cout << "\n>>Entered gcdExists()";
+    #endif
+    
+    mpz_t one,	// the value 1 in mpz_t
+            gcd,	// to store gcd
+            a;	// loop counter
 
-	mpz_init_set_str(gcd, "1", 10);	// initialize gcd to 1
-	mpz_init_set_str(one, "1", 10);	// initialize one to 1
-	mpz_init_set_str(a, "2", 10);	// initialize a to 2
+    mpz_init_set_str(gcd, "1", 10);	// initialize gcd to 1
+    mpz_init_set_str(one, "1", 10);	// initialize one to 1
+    mpz_init_set_str(a, "2", 10);	// initialize a to 2
 
-	while (mpz_cmp(a, r) <= 0)		// while(a < r)
-	{
-		mpz_gcd(gcd, a, number);
+    while (mpz_cmp(a, r) <= 0)		// while(a < r)
+    {
+        mpz_gcd(gcd, a, number);
 
-		#ifdef PRINTVALS
-		gmp_printf("\n%Zd\) a : %Zd, gcd : %Zd", a, a, gcd);
-		#endif
+        #ifdef PRINTVALS
+        gmp_printf("\n%Zd\) a : %Zd, gcd : %Zd", a, a, gcd);
+        #endif
 
-		if (mpz_cmp(gcd, one) != 0)	// if(gcd != 1)
-		{
-			mpz_clears(gcd, one, a, NULL);
-			return true;			// exists
-		}
-		
-		mpz_add(a, a, one); // a += 1
-	}
+        if (mpz_cmp(gcd, one) != 0)	// if(gcd != 1)
+        {
+            mpz_clears(gcd, one, a, NULL);
+            return true;			// exists
+        }
+        
+        mpz_add(a, a, one); // a += 1
+    }
 
-	return false;	// does not exist
+    return false;	// does not exist
 }
 
 //-------------------------------------------------------------------------//
@@ -258,36 +260,36 @@ bool gcdExists(const mpz_t number, const mpz_t r)
 */
 void reduceExponents(ZZ_pX &p, const ZZ &r)
 {
-	#ifdef PRINTFUNC
-	std::cout << "\n>>Entered reduceExponents()";
-	#endif
-	
-	long i = deg(p);
-	long rl;
-	long i_mod_r;
-	ZZ_p c;			// value of current (high-order) coefficient
-	ZZ_p newc;		// value to put into new (low-order) coefficient
+    #ifdef PRINTFUNC
+    std::cout << "\n>>Entered reduceExponents()";
+    #endif
+    
+    long i = deg(p);
+    long rl;
+    long i_mod_r;
+    ZZ_p c;			// value of current (high-order) coefficient
+    ZZ_p newc;		// value to put into new (low-order) coefficient
 
-	// But we need R as a long!
-	// WARNING: Truncates without checking length first.
-	conv(rl, r);
+    // But we need R as a long!
+    // WARNING: Truncates without checking length first.
+    conv(rl, r);
 
-	while (i >= rl) 
-	{
-		c = coeff(p, i);
-		if (!IsZero(c)) 
-		{
-			i_mod_r = i % rl;
+    while (i >= rl) 
+    {
+        c = coeff(p, i);
+        if (!IsZero(c)) 
+        {
+            i_mod_r = i % rl;
 
-			newc = coeff(p, i_mod_r);	// Add the value of the high-order coefficient to that of the
-			add(newc, newc, c);		    // equivalent (mod r) low-order coefficient
+            newc = coeff(p, i_mod_r);	// Add the value of the high-order coefficient to that of the
+            add(newc, newc, c);		    // equivalent (mod r) low-order coefficient
 
-			// Update the value of the low-order coefficient and clear the high-order one
-			SetCoeff(p, i % rl, newc);
-			SetCoeff(p, i, 0);
-		}
-		i--;
-	}
+            // Update the value of the low-order coefficient and clear the high-order one
+            SetCoeff(p, i % rl, newc);
+            SetCoeff(p, i, 0);
+        }
+        i--;
+    }
 }
 
 //-------------------------------------------------------------------------//
@@ -372,11 +374,11 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr, const bool parallel)
     long sqrtRlogN;
     long logN = NumBits(number);
     bool isPrime;
-  	
+    
     // Find sqrt(r) * log(n)
-	conv(sqrtRlogN, r);
-	sqrtRlogN = sqrt(sqrtRlogN);
-	sqrtRlogN *= logN;
+    conv(sqrtRlogN, r);
+    sqrtRlogN = sqrt(sqrtRlogN);
+    sqrtRlogN *= logN;
 
     bitLength = NumBits(number);
     aMax = floor(sqrtRlogN);
@@ -439,7 +441,7 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr, const bool parallel)
             threadArr[i].join();
         }
     }
-	
+    
     return isPrime ; 
 }
 
@@ -497,11 +499,7 @@ bool aksLnPserial(const mpz_t number)
      }
 
      // check for congruence serially
-     clock_t t1 = clock(), t2;
-     bool con = congruenceExists(number, r, false);
-     t2 = clock() - t1;
-     cout << "\n congruence took " << (float)t2/CLOCKS_PER_SEC << "in serial.";
-     if (!con)
+     if (!congruenceExists(number, r, false))
      {
          #ifdef PRINTVALS
          cout << "Not prime because congruence does not exists";
@@ -569,11 +567,7 @@ bool aksLnPparallel(const mpz_t number)
     }
 
     // check for congruence parallely
-    clock_t t1 = clock(), t2;
-    bool con = congruenceExists(number, r, true);
-    t2 = clock() - t1;
-    cout << "\n congruence took " << (float)t2 / CLOCKS_PER_SEC << "in parallel.";
-    if (!con)
+    if (!congruenceExists(number, r, true))
     {
         #ifdef PRINTVALS
         cout << "Not prime because congruence does not exists";
