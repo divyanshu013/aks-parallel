@@ -357,16 +357,16 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr, const bool parallel)
 	ZZ nModR;
 	ZZ_pX left;
 	ZZ_pX right;
-	long leadCoeff;
-	bool isPrime;
-	long bitLength;
 	ZZ_pX base;
+    
+    long bitLength;
 	long aMax;
-
+    long leadCoeff;
 	long sqrtRlogN;
 	long logN = NumBits(number);
-
-  	// Find sqrt(r) * log(n)
+    bool isPrime;
+  	
+    // Find sqrt(r) * log(n)
 	conv(sqrtRlogN, r);
 	sqrtRlogN = sqrt(sqrtRlogN);
 	sqrtRlogN *= logN;
@@ -375,18 +375,57 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr, const bool parallel)
 	aMax = floor(sqrtRlogN);
 	isPrime = true;
 
+    // Initialize the functor
+    ParallelWork pFunct(bitLength, leadCoeff,
+                        base, left, right,
+                        nModR, number, r, &isPrime);
+    
     // If serial execution wanted
     if(!parallel)
     {
-        // Initialize and call the function
-        ParallelWork pFunct(bitLength, leadCoeff,
-                            base, left, right,
-                            nModR, number, r, &isPrime);
         pFunct(1, aMax);
 	}
     else // Otherwise execute parallely
     {
-        //#TODO add code for parallel execution
+        int nThreads = thread::hardware_concurrency(), // Get no of threads
+            interval;  
+        
+        float fInterval = (float)aMax / nThreads;
+
+        std::vector<std::thread> threadVec(nThreads);   // Vector of threads
+        
+        if ((fInterval - (int)fInterval) >= 0.5)
+            interval = ceil(fInterval);
+        else
+            interval = fInterval;
+
+        #ifdef PRINTVALS
+        cout << "Part:" << interval << "fpart ::" << fInterval << "amax" << aMax<< endl;
+        #endif
+        
+        // Create and execute the threads
+        for (int i = 0, start = 1, end = interval; i < nThreads; i++)
+        {
+            #ifdef PRINTVALS
+            cout << endl << i << "Start :" << start << " End :" << end;
+            #endif
+
+            threadVec.push_back(std::thread(pFunct, start, end));
+            
+            // Update the indices
+            start = end + 1;
+            if (i + 2 == nThreads)
+                end = aMax;
+            else
+                end += interval;
+        }
+
+        // Wait for threads
+        for (int i = 0; i < threadVec.size(); i++)
+        {
+            threadVec[i].join();
+        }
+
     }
 	return isPrime ; // exists
 }
@@ -454,7 +493,7 @@ bool aksLnPserial(const mpz_t number)
      }
 
      // check for congruence
-     if (!congruenceExists(number, r))
+     if (!congruenceExists(number, r, false))
      {
          #ifdef PRINTVALS
          cout << "Not prime because congruence does not exists";

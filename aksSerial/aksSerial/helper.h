@@ -25,10 +25,12 @@
 #define HELPER_H
 
 #include <iostream>
+#include <vector>
 #include <mpir.h>
 #include <NTL/tools.h>
 #include <NTL/ZZ_p.h>
 #include <NTL/ZZ_pX.h>
+
 
 //#define PRINTFUNC		// Uncommnet it to know the entry/exit in functions
 //#define PRINTVALS		// Uncomment it to print values in funtions
