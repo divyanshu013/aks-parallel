@@ -25,7 +25,6 @@
 #define HELPER_H
 
 #include <iostream>
-#include <vector>
 #include <mpir.h>
 #include <NTL/tools.h>
 #include <NTL/ZZ_p.h>

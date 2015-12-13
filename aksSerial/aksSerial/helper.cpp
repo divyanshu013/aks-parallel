@@ -390,9 +390,11 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr, const bool parallel)
         int nThreads = thread::hardware_concurrency(), // Get no of threads
             interval;  
         
+        --nThreads;     // Use one less than the availabe to prevent contention
+
         float fInterval = (float)aMax / nThreads;
 
-        std::vector<std::thread> threadVec(nThreads);   // Vector of threads
+        thread *threadArr = new std::thread [nThreads];   // Arr of threads
         
         if ((fInterval - (int)fInterval) >= 0.5)
             interval = ceil(fInterval);
@@ -410,7 +412,11 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr, const bool parallel)
             cout << endl << i << "Start :" << start << " End :" << end;
             #endif
 
-            threadVec.push_back(std::thread(pFunct, start, end));
+            // Execute the thread
+            threadArr[i] = std::thread(ParallelWork(bitLength, leadCoeff,
+                                                    base, left, right,
+                                                    nModR, number, r, &isPrime),
+                                       start, end);
             
             // Update the indices
             start = end + 1;
@@ -421,13 +427,13 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr, const bool parallel)
         }
 
         // Wait for threads
-        for (int i = 0; i < threadVec.size(); i++)
+        for (int i = 0; i < nThreads; i++)
         {           
-            threadVec[i].join();
+            threadArr[i].join();
         }
-
     }
-	return isPrime ; // exists
+	
+    return isPrime ; // exists
 }
 
 //-------------------------------------------------------------------------//
@@ -493,7 +499,7 @@ bool aksLnPserial(const mpz_t number)
      }
 
      // check for congruence
-     if (!congruenceExists(number, r, false))
+     if (!congruenceExists(number, r, true))
      {
          #ifdef PRINTVALS
          cout << "Not prime because congruence does not exists";
