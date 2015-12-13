@@ -69,7 +69,7 @@ void testIsPower() {
 		std::cout << " is NOT perfect power" << std::endl;
 }
 
-void testAksLnP() {
+void testAksLnPSerial() {
   mpz_t number, fifty_three;
   int diff;
 	char ip[100];
@@ -111,7 +111,7 @@ void testAksLnP() {
     }
   }
   else  {
-  	if(aksLnP(number))
+  	if(aksLnPserial(number))
   		std::cout << " is prime" << std::endl;
   	else
   		std::cout << " is composite" << std::endl;
@@ -122,13 +122,13 @@ void testAksLnP() {
   printf("Execution Time is %f s\n", (float)(time_after - time_before)/CLOCKS_PER_SEC);
 }
 
-void generateDataset()
+void generateDatasetSerial()
 {
   mpz_t number, fifty_three;
   mpz_init_set_str(fifty_three, "53", 10);
   ofstream datafile;
-  datafile.open ("plot.dat");
-  datafile << "#This is the datafile for gnuplot\n";
+  datafile.open ("plot_serial.dat");
+  datafile << "#This is the datafile for gnuplot running aksLnPserial\n";
   datafile << "#Iteration \t Number \t Execution time (ms)\n";
   unsigned long int prime_array[] = {19, 31, 109, 199, 409, 571, 631, 829, 1489,
     1999, 2341, 2971, 3529, 4621, 4789, 7039, 7669, 8779, 9721, 10459, 10711,
@@ -173,7 +173,7 @@ void generateDataset()
       }
     }
     else  {
-    	if(aksLnP(number))
+    	if(aksLnPserial(number))
         std::cout << prime_array[i] << " is prime" << std::endl;
     	else
         std::cout << prime_array[i] << " is composite in else" << std::endl;
@@ -183,7 +183,7 @@ void generateDataset()
     clock_t time_after = clock();
     float execution_time = (float)(time_after - time_before)/CLOCKS_PER_SEC;
     std::cout << execution_time << std::endl;
-    //execution_time *= 1000; // time in ms
+    execution_time *= 1000; // time in ms
     datafile << i;
     datafile << "\t";
     datafile << prime_array[i];
@@ -192,7 +192,7 @@ void generateDataset()
     datafile << "\n";
   }
   datafile.close();
-  std::cout << "Run gnuplot plot.dat for results" << std::endl;
+  std::cout << "Run gnuplot plot_serial.dat for results" << std::endl;
 }
 
 int main()
@@ -201,8 +201,8 @@ int main()
           1. Test isPower()\
           2. Test getOrder()\
           3. Test getMinR()\
-          4. Test aksLnP()\
-          5. Generate dataset\
+          4. Test aksLnPSerial()\
+          5. Generate serial dataset\
           6. Exit\n\
           Input your choice\n");
   int choice;
@@ -216,10 +216,10 @@ int main()
     case 3:
       break; //TODO
     case 4:
-      testAksLnP();
+      testAksLnPSerial();
       break;
     case 5:
-      generateDataset();
+      generateDatasetSerial();
       break;
     default:
       break;
