@@ -11,12 +11,12 @@
  * 3> 26/10/2015: Implemented getMinR() function
  * 4> 28/10/2015: *Changes in getOrder(), addition of new parameter logN2,
  *                 gcd calculation step was removed as it was redundant and
- *		           was not required.
+ *                 was not required.
  *                *Addition and implentation of gcdExists() funtion
  * 5> 29/10/2015: *Changes in getMinR(), change in return type
  * 6> 31/10/2015: *Rectified a bug in gcdExists()
  * 7> 1/11/2015:  *Addition of reduceExponents() function
- *		          *Addition of congruenceExists() function
+ *                *Addition of congruenceExists() function
  * 8> 5/11/2015: *Addition of a separate test.cpp file
  * 9> 18/11/2015: *Addition of compatibility fix for linux
  *10> 27/11/2015: *Addition of defination of aksLnP()
@@ -205,7 +205,9 @@ void getMinR(mpz_t r, const mpz_t number)
 *              r (mpz_t) - the value of r
 * return : if gcd exists or not (bool) - true if exist and false otherwise
 *
-* Implementation: #TODO complete it
+* Implementation: This function has a loop, which tests the existence
+* of gcd upto the limit, i.e. r. It is implemented using the mpirn's gcd
+* function as it provides very good performance.
 */
 bool gcdExists(const mpz_t number, const mpz_t r)
 {
@@ -214,8 +216,8 @@ bool gcdExists(const mpz_t number, const mpz_t r)
 	#endif
 	
 	mpz_t one,	// the value 1 in mpz_t
-		  gcd,	// to store gcd
-		  a;	// loop counter
+          gcd,	// to store gcd
+          a;	// loop counter
 
 	mpz_init_set_str(gcd, "1", 10);	// initialize gcd to 1
 	mpz_init_set_str(one, "1", 10);	// initialize one to 1
@@ -244,13 +246,15 @@ bool gcdExists(const mpz_t number, const mpz_t r)
 //-------------------------------------------------------------------------//
 
 /*
-* reduceExponents() - This function reduces the exponents mod r
+* reduceExponents() - This function reduces the exponents mod X^r - 1
 *
 * parameters : poly (ZZ_pX) - the polynomial
 *              r (ZZ) - the value of r
 * return : void
 * 
-* Implementation : #TODO complete it
+* Implementation : It is implemented as follows - we repetedly divide
+* (X^n - 1), with (X^r - 1), until the degree of the polynomial under
+* consideration is <= r. Its simple pencil and paper method.
 */
 void reduceExponents(ZZ_pX &p, const ZZ &r)
 {
@@ -276,7 +280,7 @@ void reduceExponents(ZZ_pX &p, const ZZ &r)
 			i_mod_r = i % rl;
 
 			newc = coeff(p, i_mod_r);	// Add the value of the high-order coefficient to that of the
-			add(newc, newc, c);		// equivalent (mod r) low-order coefficient
+			add(newc, newc, c);		    // equivalent (mod r) low-order coefficient
 
 			// Update the value of the low-order coefficient and clear the high-order one
 			SetCoeff(p, i % rl, newc);
@@ -335,35 +339,38 @@ void ParallelWork::operator () (int start, int end)
 *              parallel (bool) - set for parallel execution, unset for serial
 * return : if congruence exists or not (bool) - true if exist and false otherwise
 * 
-* Implementation: #TODO complete it
+* Implementation: This function is implemented with options to execute it serially
+* as well as parallely. It uses the binaly exponention for expansion of the polynomial.
+* ParallelWork() is the main helper of this function, and the task of polynomial expansion
+* is performed by ParallelWork(). It can be run in single threaded or multithreaded mode. 
 */
 bool congruenceExists(const mpz_t gnumber, const mpz_t gr, const bool parallel)
 {
-	#ifdef PRINTFUNC
-	std::cout << "\n>>Entered congruenceExists()";
-	#endif
-
-	char cNumber[NSIZE],    // char rep of n
-	     cR[NSIZE];         // and r
+    #ifdef PRINTFUNC
+    std::cout << "\n>>Entered congruenceExists()";
+    #endif
     
-	gmp_sprintf(cNumber, "%Zd", gnumber);
-	gmp_sprintf(cR, "%Zd", gr);
+    char cNumber[NSIZE],    // char rep of n
+         cR[NSIZE];         // and r
+    
+    gmp_sprintf(cNumber, "%Zd", gnumber);
+    gmp_sprintf(cR, "%Zd", gr);
 
-	ZZ number = conv<ZZ>(cNumber);
-	ZZ r = conv<ZZ>(cR);
+    ZZ number = conv<ZZ>(cNumber);
+    ZZ r = conv<ZZ>(cR);
 
-	ZZ_p::init(number);
+    ZZ_p::init(number);
 
-	ZZ nModR;
-	ZZ_pX left;
-	ZZ_pX right;
-	ZZ_pX base;
+    ZZ nModR;
+    ZZ_pX left;
+    ZZ_pX right;
+    ZZ_pX base;
     
     long bitLength;
-	long aMax;
+    long aMax;
     long leadCoeff;
-	long sqrtRlogN;
-	long logN = NumBits(number);
+    long sqrtRlogN;
+    long logN = NumBits(number);
     bool isPrime;
   	
     // Find sqrt(r) * log(n)
@@ -371,9 +378,9 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr, const bool parallel)
 	sqrtRlogN = sqrt(sqrtRlogN);
 	sqrtRlogN *= logN;
 
-	bitLength = NumBits(number);
-	aMax = floor(sqrtRlogN);
-	isPrime = true;
+    bitLength = NumBits(number);
+    aMax = floor(sqrtRlogN);
+    isPrime = true;
 
     // Initialize the functor
     ParallelWork pFunct(bitLength, leadCoeff,
@@ -384,7 +391,7 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr, const bool parallel)
     if(!parallel)
     {
         pFunct(1, aMax);
-	}
+    }
     else // Otherwise execute parallely
     {
         int nThreads = thread::hardware_concurrency(), // Get no of threads
@@ -444,7 +451,9 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr, const bool parallel)
 * parameters : number (mpz_t) - the number to be tested
 * return : if prime or not (bool) - true if prime and false otherwise
 *
-* Implementation: This funciton implements the Lenstra and Pomerance improved AKS algorithm
+* Implementation: This fucntion uses all the helper functions to execute the
+* Lenstra and Pomerance version of AKS algoritm. The steps are all similar to 
+* the actual algorithm, in a serial manner
 */
 bool aksLnPserial(const mpz_t number)
 {
@@ -488,7 +497,11 @@ bool aksLnPserial(const mpz_t number)
      }
 
      // check for congruence serially
-     if (!congruenceExists(number, r, false))
+     clock_t t1 = clock(), t2;
+     bool con = congruenceExists(number, r, false);
+     t2 = clock() - t1;
+     cout << "\n congruence took " << (float)t2/CLOCKS_PER_SEC << "in serial.";
+     if (!con)
      {
          #ifdef PRINTVALS
          cout << "Not prime because congruence does not exists";
@@ -510,7 +523,9 @@ bool aksLnPserial(const mpz_t number)
 * parameters : number (mpz_t) - the number to be tested
 * return : if prime or not (bool) - true if prime and false otherwise
 *
-* Implementation: #TODO for now
+* Implementation: This fucntion uses all the helper functions to execute the
+* Lenstra and Pomerance version of AKS algoritm. The steps are all similar to 
+* the actual algorithm, in a parallel manner
 */
 bool aksLnPparallel(const mpz_t number)
 {
@@ -554,7 +569,11 @@ bool aksLnPparallel(const mpz_t number)
     }
 
     // check for congruence parallely
-    if (!congruenceExists(number, r, true))
+    clock_t t1 = clock(), t2;
+    bool con = congruenceExists(number, r, true);
+    t2 = clock() - t1;
+    cout << "\n congruence took " << (float)t2 / CLOCKS_PER_SEC << "in parallel.";
+    if (!con)
     {
         #ifdef PRINTVALS
         cout << "Not prime because congruence does not exists";

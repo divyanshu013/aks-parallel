@@ -10,10 +10,10 @@
  * 2> 20/10/2015: Addition of getOrder() function
  *                Addition of getMinR() function
  * 3> 28/10/2015: *Changes in getOrder(), addition of new parameter logN2
- *	              *Addition of gcdExists() function
+ *                *Addition of gcdExists() function
  * 4> 29/10/2015: *Changes in getMinR(), change in return type
  * 5> 31/10/2015: *Addition of congruenceExists()
- *				  *Addition of reduceExponents()
+ *                *Addition of reduceExponents()
  * 6> 18/11/2015: *Added compatibility fix for linux
  * 7> 12/12/2015: *Addition of ParallelWork() functor
  * 8> 12/12/2015: *Modified aksLnP() to aksLnPserial()
@@ -31,10 +31,10 @@
 #include <NTL/ZZ_pX.h>
 
 
-//#define PRINTFUNC		// Uncommnet it to know the entry/exit in functions
-//#define PRINTVALS		// Uncomment it to print values in funtions
-#define LOGSIZE 200		// size of log buffer
-#define NSIZE 20		// size of buffer for storing 
+//#define PRINTFUNC     // Uncommnet it to know the entry/exit in functions
+//#define PRINTVALS     // Uncomment it to print values in funtions
+#define LOGSIZE 200     // size of log buffer
+#define NSIZE 20        // size of buffer for storing 
 //#define LINUX         // uncomment for compilation in linux environment
 
 NTL_CLIENT
@@ -44,10 +44,6 @@ NTL_CLIENT
  *
  * parameters : number (mpz_t) - the number to be tested
  * return : bool - true if perfect power, else not
- *
- * Implementation - It is currently implemented using the library funtion
- * from MPIR as it provides a very fast implementaion. But the implementation
- * is libale to change.
  */
 bool isPower(const mpz_t number);                               
 
@@ -59,8 +55,8 @@ bool isPower(const mpz_t number);
  *
  * parameters : k (mpz_t) - the value of k is stored in this var
  *              number (mpz_t) - the number to be tested
- *			    r (mpz_t) - the number for modulus
- *				logN2 (mpz_t) - the max limit for k
+ *              r (mpz_t) - the number for modulus
+ *              logN2 (mpz_t) - the max limit for k
  * return : void
  */
 void getOrder(mpz_t k, const mpz_t number, const mpz_t r, const mpz_t logN2);
@@ -113,26 +109,29 @@ class ParallelWork
 {
     long bitLength,
         leadingCoeff;
+    
     ZZ_pX base,
         left,
         right;
-    bool *isPrime;
+    
     ZZ nModR,
         number,
         r;
 
-    public:
-    // Ctor, initialize the local data
-    ParallelWork(long bitLen, long leadCoeff,
-                 ZZ_pX Base, ZZ_pX Left, ZZ_pX Right,
-                 ZZ nModr, ZZ num, ZZ R, bool *isprime)
-    : bitLength(bitLen), leadingCoeff(leadCoeff),
-      base(Base), left(Left), right(Right),
-      nModR(nModr), number(num), r(R), isPrime(isprime)
-    {   }
+    bool *isPrime;
 
-    // Overloaded function call operator
-    void operator () (int start, int end);
+    public:
+        // Ctor, initialize the local data
+        ParallelWork(long &bitLen, long &leadCoeff,
+                     ZZ_pX &Base, ZZ_pX &Left, ZZ_pX &Right,
+                     ZZ &nModr, ZZ &num, ZZ &R, bool *isprime)
+        : bitLength(bitLen), leadingCoeff(leadCoeff),
+          base(Base), left(Left), right(Right),
+          nModR(nModr), number(num), r(R), isPrime(isprime)
+        {   }
+
+        // Overloaded function call operator
+        void operator () (int start, int end);
 };
 
 //-------------------------------------------------------------------------//
@@ -151,7 +150,8 @@ bool congruenceExists(const mpz_t number, const mpz_t r, const bool parallel = f
 //-------------------------------------------------------------------------//
 
 /*
-* aksLnPserial() - This function runs the aks algorithm improved by Lenstra and Pomerance
+* aksLnPserial() - This function runs the aks algorithm (serial) improved 
+* by Lenstra and Pomerance
 *
 * parameters : number (mpz_t) - the number to be tested
 * return : if prime or not (bool) - true if prime and false otherwise
