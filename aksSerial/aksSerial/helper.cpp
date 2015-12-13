@@ -23,6 +23,7 @@
  *11> 12/12/2015: *Addition of defination of ParallelWork() functor
  *12> 12/12/2015: *Modified aksLnP() to aksLnPserial()
  *13> 12/12/2015: *Addition of defination of aksLnPparallel()
+ *14> 13/12/2015: *Modification of congruenceExists()
  */
 
 #include "helper.h"
@@ -331,11 +332,12 @@ void ParallelWork::operator () (int start, int end)
 *
 * parameters : number (mpz_t) - the number to be tested
 *              r (mpz_t) - the value of r
+*              parallel (bool) - set for parallel execution, unset for serial
 * return : if congruence exists or not (bool) - true if exist and false otherwise
 * 
 * Implementation: #TODO complete it
 */
-bool congruenceExists(const mpz_t gnumber, const mpz_t gr)
+bool congruenceExists(const mpz_t gnumber, const mpz_t gr, const bool parallel)
 {
 	#ifdef PRINTFUNC
 	std::cout << "\n>>Entered congruenceExists()";
@@ -373,12 +375,19 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr)
 	aMax = floor(sqrtRlogN);
 	isPrime = true;
 
-    // Initialize and call the function
-	ParallelWork pFunct(bitLength, leadCoeff,
-                        base, left, right,
-                        nModR, number, r, &isPrime);
-    pFunct(1, aMax);
-	
+    // If serial execution wanted
+    if(!parallel)
+    {
+        // Initialize and call the function
+        ParallelWork pFunct(bitLength, leadCoeff,
+                            base, left, right,
+                            nModR, number, r, &isPrime);
+        pFunct(1, aMax);
+	}
+    else // Otherwise execute parallely
+    {
+        //#TODO add code for parallel execution
+    }
 	return isPrime ; // exists
 }
 

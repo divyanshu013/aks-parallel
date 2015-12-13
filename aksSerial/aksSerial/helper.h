@@ -18,6 +18,7 @@
  * 7> 12/12/2015: *Addition of ParallelWork() functor
  * 8> 12/12/2015: *Modified aksLnP() to aksLnPserial()
  * 9> 12/12/2015: *Addition of aksLnPparallel()
+ *10> 13/12/2015: *Modification of congruenceExists()
  */
 
 #ifndef HELPER_H
@@ -141,9 +142,10 @@ class ParallelWork
 *
 * parameters : number (mpz_t) - the number to be tested
 *              r (mpz_t) - the value of r
+*              parallel (bool) - set for parallel execution, unset for serial
 * return : if congruence exists or not (bool) - true if exist and false otherwise
 */
-bool congruenceExists(const mpz_t number, const mpz_t r);
+bool congruenceExists(const mpz_t number, const mpz_t r, const bool parallel = false);
 
 //-------------------------------------------------------------------------//
 
