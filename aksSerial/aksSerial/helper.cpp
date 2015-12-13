@@ -422,7 +422,7 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr, const bool parallel)
 
         // Wait for threads
         for (int i = 0; i < threadVec.size(); i++)
-        {
+        {           
             threadVec[i].join();
         }
 
