@@ -433,7 +433,7 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr, const bool parallel)
         }
     }
 	
-    return isPrime ; // exists
+    return isPrime ; 
 }
 
 //-------------------------------------------------------------------------//
