@@ -1,7 +1,7 @@
 /*
  * Major Project - Parallel implementation of AKS Algorithm
- * This header file contains the prototypes of the functions that will be 
- * used for implementing the steps of AKS algorithm. The corresponding 
+ * This header file contains the prototypes of the functions that will be
+ * used for implementing the steps of AKS algorithm. The corresponding
  * implementations are present in helper.cpp file.
  * You are expected to adhere to the coding standards.
  *
@@ -25,21 +25,23 @@
 #define HELPER_H
 
 #include <iostream>
+#include <cstddef>
 #include <mpir.h>
 #include <NTL/tools.h>
 #include <NTL/ZZ_p.h>
 #include <NTL/ZZ_pX.h>
-
+#include <thread>
+#include <pthread.h>
 
 //#define PRINTFUNC		// Uncommnet it to know the entry/exit in functions
 //#define PRINTVALS		// Uncomment it to print values in funtions
 #define LOGSIZE 200		// size of log buffer
-#define NSIZE 20		// size of buffer for storing 
-//#define LINUX         // uncomment for compilation in linux environment
+#define NSIZE 20		// size of buffer for storing
+#define LINUX         // uncomment for compilation in linux environment
 
 NTL_CLIENT
 
-/* 
+/*
  * isPower() - This function checks if given number is a perfect power or not
  *
  * parameters : number (mpz_t) - the number to be tested
@@ -49,7 +51,7 @@ NTL_CLIENT
  * from MPIR as it provides a very fast implementaion. But the implementation
  * is libale to change.
  */
-bool isPower(const mpz_t number);                               
+bool isPower(const mpz_t number);
 
 //-------------------------------------------------------------------------//
 
@@ -70,8 +72,8 @@ void getOrder(mpz_t k, const mpz_t number, const mpz_t r, const mpz_t logN2);
 /*
  * getMinR() - This function finds min r such that given r ? N, n ? Z with
  * (n, r) = 1, with some smallest number k such that n^k = 1 (mod r) and
- * k > log^2(n). 
- * 
+ * k > log^2(n).
+ *
  * parameters : r (mpz_t) - the value of min r is stored in this var
  *              number (mpz_t) - the number to be tested
  * return : void
@@ -139,7 +141,7 @@ class ParallelWork
 
 /*
 * congruenceExists() - This function checks if (X + a)^n iseqv to (X^n + a)
-* mod(X^r - 1, n). 
+* mod(X^r - 1, n).
 *
 * parameters : number (mpz_t) - the number to be tested
 *              r (mpz_t) - the value of r
@@ -161,7 +163,7 @@ bool aksLnPserial(const mpz_t number);
 //-------------------------------------------------------------------------//
 
 /*
-* aksLnPparallel() - This function runs the aks algorithm (parallel) improved 
+* aksLnPparallel() - This function runs the aks algorithm (parallel) improved
 * by Lenstra and Pomerance
 *
 * parameters : number (mpz_t) - the number to be tested
