@@ -12,7 +12,7 @@
  * 4> 28/10/2015: *Changes in getOrder(), addition of new parameter logN2,
  *                 gcd calculation step was removed as it was redundant and
  *		           was not required.
- *                 *Addition and implentation of gcdExists() funtion
+ *                *Addition and implentation of gcdExists() funtion
  * 5> 29/10/2015: *Changes in getMinR(), change in return type
  * 6> 31/10/2015: *Rectified a bug in gcdExists()
  * 7> 1/11/2015:  *Addition of reduceExponents() function
@@ -449,19 +449,8 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr, const bool parallel)
 bool aksLnPserial(const mpz_t number)
 {
      #ifdef PRINTFUNC
-     std::cout << "\n>>Entered congruenceExists()";
+     std::cout << "\n>>Entered aksLnPserial()";
      #endif
-    
-     /* Don't check here for the time being
-     // Check for small primes
-     char cNumber[NSIZE];
-     int iNumber;
-     gmp_sprintf(cNumber, "%Zd", number);
-     iNumber = atoi(cNumber);
-     if(iNumber == 2 || iNumber == 3 || iNumber == 5 || iNumber == 7 || iNumber == 11 ||
-        iNumber == 13 || iNumber == 17 || iNumber == 19 || iNumber == 23 || iNumber == 29)
-        return true;
-     */
 
      mpz_t r;       // r value
 
@@ -498,8 +487,8 @@ bool aksLnPserial(const mpz_t number)
          return false;  // composite, condition in algorithm
      }
 
-     // check for congruence
-     if (!congruenceExists(number, r, true))
+     // check for congruence serially
+     if (!congruenceExists(number, r, false))
      {
          #ifdef PRINTVALS
          cout << "Not prime because congruence does not exists";
@@ -525,5 +514,55 @@ bool aksLnPserial(const mpz_t number)
 */
 bool aksLnPparallel(const mpz_t number)
 {
-    // #TODO write something here:D, leaving for tommorow
+    #ifdef PRINTFUNC
+    std::cout << "\n>>Entered aksLnPparallel()";
+    #endif
+
+    mpz_t r;       // r value
+
+    // Check for perfect power
+    if (isPower(number))
+    {
+        #ifdef PRINTVALS
+        cout << "Not prime because perfect power";
+        #endif
+
+        return false;  // composite
+    }
+
+    // get value of r
+    getMinR(r, number);
+
+    // check for GCD
+    if (gcdExists(number, r))
+    {
+        #ifdef PRINTVALS
+        cout << "Not prime because gcd present";
+        #endif
+
+        return false;  // composite
+    }
+
+    // check if number <= r
+    if (mpz_cmp(r, number) >= 0)
+    {
+        #ifdef PRINTVALS
+        cout << "Not prime because r >= n";
+        #endif
+
+        return false;  // composite, condition in algorithm
+    }
+
+    // check for congruence parallely
+    if (!congruenceExists(number, r, true))
+    {
+        #ifdef PRINTVALS
+        cout << "Not prime because congruence does not exists";
+        #endif
+
+        return false;  // composite
+    }
+
+    // passed all tests, so prime
+    return true;
 }
