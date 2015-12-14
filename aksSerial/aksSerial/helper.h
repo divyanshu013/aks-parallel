@@ -31,7 +31,6 @@
 #include <NTL/ZZ_p.h>
 #include <NTL/ZZ_pX.h>
 #include <thread>
-#include <pthread.h>
 
 //#define PRINTFUNC		// Uncommnet it to know the entry/exit in functions
 //#define PRINTVALS		// Uncomment it to print values in funtions
@@ -43,6 +42,10 @@
 #define LOGSIZE 200     // size of log buffer
 #define NSIZE 20        // size of buffer for storing
 //#define LINUX         // uncomment for compilation in linux environment
+
+#ifdef LINUX
+#include <pthread.h>
+#endif
 
 NTL_CLIENT
 

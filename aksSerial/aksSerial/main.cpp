@@ -8,7 +8,7 @@ using namespace std;
 int main()
 {
     mpz_t n, r, mod, one, powr, gcd;
-	mpz_init_set_ui(n, INT_MAX);
+	mpz_init_set_ui(n, 178009211);
     bool is;
     clock_t t1 = clock(), t2;
     is = aksLnPserial(n);
