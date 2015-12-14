@@ -284,7 +284,7 @@ void generateDatasetParallel()
 
 int main()
 {
-/*
+
   printf("AKS Test class\n\
           1. Test isPower()\
           2. Test getOrder()\
@@ -293,7 +293,8 @@ int main()
           5. Generate serial dataset\
           6. Test aksLnPparallel()\
           7. Generate parallel dataset\
-          8. Exit\n\
+          8. Call genData() to generate data\
+          9. Exit\n\
           Input your choice\n");
   int choice;
   scanf("%d", &choice);
@@ -317,10 +318,13 @@ int main()
     case 7:
       generateDatasetParallel();
       break;
+    case 8:
+        genData();
+        break;
     default:
       break;
   }
-  */
+  
   genData();
   return 0;
 }
