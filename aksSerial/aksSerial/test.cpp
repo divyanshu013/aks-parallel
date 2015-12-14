@@ -4,59 +4,20 @@
 #include <cstring>
 #include <time.h>
 #include <fstream>
-/*
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <sys/time.h>
-#include <ctime>
-#endif
-
-typedef long long int64;
-typedef unsigned long long uint64;
-
-/* Returns the amount of milliseconds elapsed since the UNIX epoch. Should work on both
- * windows and linux. TODO Check on Windows*/
-/*
-uint64 GetTimeMs64()
-{
-  #ifdef _WIN32
-  /* Windows *//*
-  FILETIME ft;
-  LARGE_INTEGER li;
-
-  /* Get the amount of 100 nano seconds intervals elapsed since January 1, 1601 (UTC) and copy it
-   * to a LARGE_INTEGER structure. *//*
-  GetSystemTimeAsFileTime(&ft);
-  li.LowPart = ft.dwLowDateTime;
-  li.HighPart = ft.dwHighDateTime;
-
-  uint64 ret = li.QuadPart;
-  ret -= 116444736000000000LL; /* Convert from file time to UNIX epoch time. *//*
-  ret /= 10000; /* From 100 nano seconds (10^-7) to 1 millisecond (10^-3) intervals *//*
-
-  return ret;
-  #else
-  /* Linux *//*
-  struct timeval tv;
-
-  gettimeofday(&tv, NULL);
-
-  uint64 ret = tv.tv_usec;
-  /* Convert from micro seconds (10^-6) to milliseconds (10^-3) *//*
-  ret /= 1000;
-
-  /* Adds the seconds (10^0) after converting them to milliseconds (10^-3) *//*
-  ret += (tv.tv_sec * 1000);
-
-  return ret;
-  #endif
-}
-*/
+#include <iomanip>
+#include <signal.h>
 
 using namespace std;
 
-void testIsPower() {
+// Use this function in main to generate the required dataset
+void genData(void);
+
+// Signal handler in case of termination
+void handler(int);
+
+
+void testIsPower() 
+{
   mpz_t number;
 	char ip[100];
   printf("Input number to check for perfect power\n");
@@ -323,6 +284,7 @@ void generateDatasetParallel()
 
 int main()
 {
+/*
   printf("AKS Test class\n\
           1. Test isPower()\
           2. Test getOrder()\
@@ -358,5 +320,93 @@ int main()
     default:
       break;
   }
+  */
+  genData();
   return 0;
+}
+
+// gen data
+// Sorry but these have to be global for signal handler
+ifstream infile("in.txt", ios::in);
+ofstream outfile("plot.dat", ios::out);
+int num,
+    iteration = 0;
+
+void genData(void)
+{
+    // signal thread
+    signal(SIGABRT, handler);
+    signal(SIGTERM, handler);
+    signal(SIGINT, handler);
+
+    #ifdef LINUX
+    signal(SIGQUIT, handler);
+    signal(SIGKILL, handler);
+    #endif
+
+    char number[10];
+  
+    float logSt,
+          logPt;
+    mpz_t gNum;
+
+    clock_t t1,
+            t2,
+            serialTime,
+            parallelTime;
+    
+    cout << setw(5) << "#Iter" << setw(12) << "Number" << setw(10) << "ST(ms)"
+         << setw(10) << "log10(ST)" << setw(10) << "PT(ms)" << setw(12) << "log10(PT)" << endl;
+
+    outfile << setw(5) << "#Iter" << setw(12) << "Number" << setw(10) << "ST(ms)"
+            << setw(10) << "log10(ST)" << setw(10) << "PT(ms)" << setw(12) << "log10(PT)" << '\n';
+
+
+    while (!infile.eof())
+    {
+        infile.getline(number, 100);
+        num = atoi(number);
+        mpz_init_set_ui(gNum, num);
+
+        // Serial Execution
+        t1 = clock();
+        aksLnPserial(gNum);
+        t2 = clock();
+        serialTime = t2 - t1;
+        logSt = log10(serialTime);
+
+        // Parallel Execution
+        t1 = clock();
+        aksLnPparallel(gNum);
+        t2 = clock();
+        parallelTime = t2 - t1;
+        logPt = log10(parallelTime);
+
+        // On terminal
+        cout << setw(5) << iteration << setw(12) << num << setw(10) << serialTime
+             << setw(10) << setprecision(5) << logSt << setw(10) << parallelTime << setw(12) << logPt << endl;
+
+        // On file
+        outfile << setw(5) << iteration << setw(12) << num << setw(10) << serialTime
+                << setw(10) << setprecision(5) << logSt << setw(10) << parallelTime << setw(12) << logPt << '\n';
+
+        iteration++;
+    }
+    infile.close();
+    outfile.close();
+}
+
+// Signal handler
+void handler(int param)
+{
+    outfile.flush();
+    outfile.close();
+    infile.close();
+    char buff[100];
+
+    cerr << endl << "Encountered Error in iteration " << iteration << ", Number " << num << endl;
+    sprintf(buff, "echo Iteration : %d , Number : %d > error.log", iteration, num);
+
+    system(buff);
+    exit(0);
 }
