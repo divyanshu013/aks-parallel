@@ -332,7 +332,7 @@ int main()
 // gen data
 // Sorry but these have to be global for signal handler
 ifstream infile("in.txt", ios::in);
-ofstream outfile("plot.dat", ios::out);
+ofstream outfile("plot.dat", ios::app);
 int num,
     iteration = 0;
 
@@ -388,11 +388,13 @@ void genData(void)
 
         // On terminal
         cout << setw(5) << iteration << setw(12) << num << setw(10) << serialTime
-             << setw(10) << setprecision(5) << logSt << setw(10) << parallelTime << setw(12) << logPt << endl;
+             << setw(10) << setprecision(5) << logSt << setw(10) << parallelTime << setw(12) << setprecision(5)
+             << logPt << endl;
 
         // On file
         outfile << setw(5) << iteration << setw(12) << num << setw(10) << serialTime
-                << setw(10) << setprecision(5) << logSt << setw(10) << parallelTime << setw(12) << logPt << '\n';
+                << setw(10) << setprecision(5) << logSt << setw(10) << parallelTime << setw(12) << setprecision(5) 
+                << logPt << '\n';
 
         iteration++;
     }
