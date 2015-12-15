@@ -325,7 +325,7 @@ int main()
       break;
   }
   
-  genData();
+  //genData();
   return 0;
 }
 
