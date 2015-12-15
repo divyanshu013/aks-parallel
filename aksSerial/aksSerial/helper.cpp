@@ -346,7 +346,7 @@ void ParallelWork::operator () (int start, int end)
 * ParallelWork() is the main helper of this function, and the task of polynomial expansion
 * is performed by ParallelWork(). It can be run in single threaded or multithreaded mode. 
 */
-bool congruenceExists(const mpz_t gnumber, const mpz_t gr, const bool parallel)
+bool congruenceExists(const mpz_t gnumber, const mpz_t gr, const int cores)
 {
     #ifdef PRINTFUNC
     std::cout << "\n>>Entered congruenceExists()";
@@ -389,58 +389,51 @@ bool congruenceExists(const mpz_t gnumber, const mpz_t gr, const bool parallel)
                         base, left, right,
                         nModR, number, r, &isPrime);
     
-    // If serial execution wanted
-    if(!parallel)
-    {
-        pFunct(1, aMax);
-    }
-    else // Otherwise execute parallely
-    {
-        int nThreads = thread::hardware_concurrency(), // Get no of threads
-            interval;  
+    int nThreads = cores, // Get no of threads
+        interval;  
         
-        --nThreads;     // Use one less than the availabe to prevent contention
+    //--nThreads;     // Use one less than the availabe to prevent contention
 
-        float fInterval = (float)aMax / nThreads;
+    float fInterval = (float)aMax / nThreads;
 
-        thread *threadArr = new std::thread [nThreads];   // Arr of threads
+    thread *threadArr = new std::thread [nThreads];   // Arr of threads
         
-        if ((fInterval - (int)fInterval) >= 0.5)
-            interval = ceil(fInterval);
-        else
-            interval = fInterval;
+    if ((fInterval - (int)fInterval) >= 0.5)
+        interval = ceil(fInterval);
+    else
+        interval = fInterval;
 
+    #ifdef PRINTVALS
+    cout << "Part:" << interval << "fpart ::" << fInterval << "amax" << aMax<< endl;
+    #endif
+        
+    // Create and execute the threads
+    for (int i = 0, start = 1, end = interval; i < nThreads; i++)
+    {
         #ifdef PRINTVALS
-        cout << "Part:" << interval << "fpart ::" << fInterval << "amax" << aMax<< endl;
+        cout << endl << i << "Start :" << start << " End :" << end;
         #endif
-        
-        // Create and execute the threads
-        for (int i = 0, start = 1, end = interval; i < nThreads; i++)
-        {
-            #ifdef PRINTVALS
-            cout << endl << i << "Start :" << start << " End :" << end;
-            #endif
 
-            // Execute the thread
-            threadArr[i] = std::thread(ParallelWork(bitLength, leadCoeff,
-                                                    base, left, right,
-                                                    nModR, number, r, &isPrime),
-                                       start, end);
+        // Execute the thread
+        threadArr[i] = std::thread(ParallelWork(bitLength, leadCoeff,
+                                                base, left, right,
+                                                nModR, number, r, &isPrime),
+                                    start, end);
             
-            // Update the indices
-            start = end + 1;
-            if (i + 2 == nThreads)
-                end = aMax;
-            else
-                end += interval;
-        }
-
-        // Wait for threads
-        for (int i = 0; i < nThreads; i++)
-        {           
-            threadArr[i].join();
-        }
+        // Update the indices
+        start = end + 1;
+        if (i + 2 == nThreads)
+            end = aMax;
+        else
+            end += interval;
     }
+
+    // Wait for threads
+    for (int i = 0; i < nThreads; i++)
+    {           
+        threadArr[i].join();
+    }
+    
     
     return isPrime ; 
 }
@@ -499,7 +492,7 @@ bool aksLnPserial(const mpz_t number)
      }
 
      // check for congruence serially
-     if (!congruenceExists(number, r, false))
+     if (!congruenceExists(number, r, 1))
      {
          #ifdef PRINTVALS
          cout << "Not prime because congruence does not exists";
@@ -515,7 +508,7 @@ bool aksLnPserial(const mpz_t number)
 //-------------------------------------------------------------------------//
 
 /*
-* aksLnPparallel() - This function runs the aks algorithm (parallel) improved
+* aksLnPp2core() - This function runs the aks algorithm (parallel) improved
 * by Lenstra and Pomerance
 *
 * parameters : number (mpz_t) - the number to be tested
@@ -525,7 +518,7 @@ bool aksLnPserial(const mpz_t number)
 * Lenstra and Pomerance version of AKS algoritm. The steps are all similar to 
 * the actual algorithm, in a parallel manner
 */
-bool aksLnPparallel(const mpz_t number)
+bool aksLnP2core(const mpz_t number)
 {
     #ifdef PRINTFUNC
     std::cout << "\n>>Entered aksLnPparallel()";
@@ -567,7 +560,7 @@ bool aksLnPparallel(const mpz_t number)
     }
 
     // check for congruence parallely
-    if (!congruenceExists(number, r, true))
+    if (!congruenceExists(number, r, 2))
     {
         #ifdef PRINTVALS
         cout << "Not prime because congruence does not exists";
@@ -579,3 +572,171 @@ bool aksLnPparallel(const mpz_t number)
     // passed all tests, so prime
     return true;
 }
+
+bool aksLnP4core(const mpz_t number)
+{
+    #ifdef PRINTFUNC
+    std::cout << "\n>>Entered aksLnPparallel()";
+    #endif
+
+    mpz_t r;       // r value
+
+                   // Check for perfect power
+    if (isPower(number))
+    {
+        #ifdef PRINTVALS
+        cout << "Not prime because perfect power";
+        #endif
+
+        return false;  // composite
+    }
+
+    // get value of r
+    getMinR(r, number);
+
+    // check for GCD
+    if (gcdExists(number, r))
+    {
+        #ifdef PRINTVALS
+        cout << "Not prime because gcd present";
+        #endif
+
+        return false;  // composite
+    }
+
+    // check if number <= r
+    if (mpz_cmp(r, number) >= 0)
+    {
+        #ifdef PRINTVALS
+        cout << "Not prime because r >= n";
+        #endif
+
+        return false;  // composite, condition in algorithm
+    }
+
+    // check for congruence parallely
+    if (!congruenceExists(number, r, 4))
+    {
+        #ifdef PRINTVALS
+        cout << "Not prime because congruence does not exists";
+        #endif
+
+        return false;  // composite
+    }
+
+    // passed all tests, so prime
+    return true;
+}
+
+bool aksLnP6core(const mpz_t number)
+{
+    #ifdef PRINTFUNC
+    std::cout << "\n>>Entered aksLnPparallel()";
+    #endif
+
+    mpz_t r;       // r value
+
+                   // Check for perfect power
+    if (isPower(number))
+    {
+        #ifdef PRINTVALS
+        cout << "Not prime because perfect power";
+        #endif
+
+        return false;  // composite
+    }
+
+    // get value of r
+    getMinR(r, number);
+
+    // check for GCD
+    if (gcdExists(number, r))
+    {
+        #ifdef PRINTVALS
+        cout << "Not prime because gcd present";
+        #endif
+
+        return false;  // composite
+    }
+
+    // check if number <= r
+    if (mpz_cmp(r, number) >= 0)
+    {
+        #ifdef PRINTVALS
+        cout << "Not prime because r >= n";
+        #endif
+
+        return false;  // composite, condition in algorithm
+    }
+
+    // check for congruence parallely
+    if (!congruenceExists(number, r, 6))
+    {
+        #ifdef PRINTVALS
+        cout << "Not prime because congruence does not exists";
+        #endif
+
+        return false;  // composite
+    }
+
+    // passed all tests, so prime
+    return true;
+}
+
+bool aksLnP8core(const mpz_t number)
+{
+    #ifdef PRINTFUNC
+    std::cout << "\n>>Entered aksLnPparallel()";
+    #endif
+
+    mpz_t r;       // r value
+
+                   // Check for perfect power
+    if (isPower(number))
+    {
+        #ifdef PRINTVALS
+        cout << "Not prime because perfect power";
+        #endif
+
+        return false;  // composite
+    }
+
+    // get value of r
+    getMinR(r, number);
+
+    // check for GCD
+    if (gcdExists(number, r))
+    {
+        #ifdef PRINTVALS
+        cout << "Not prime because gcd present";
+        #endif
+
+        return false;  // composite
+    }
+
+    // check if number <= r
+    if (mpz_cmp(r, number) >= 0)
+    {
+        #ifdef PRINTVALS
+        cout << "Not prime because r >= n";
+        #endif
+
+        return false;  // composite, condition in algorithm
+    }
+
+    // check for congruence parallely
+    if (!congruenceExists(number, r, 8))
+    {
+        #ifdef PRINTVALS
+        cout << "Not prime because congruence does not exists";
+        #endif
+
+        return false;  // composite
+    }
+
+    // passed all tests, so prime
+    return true;
+}
+
+
+

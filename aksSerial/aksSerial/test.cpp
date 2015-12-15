@@ -6,8 +6,11 @@
 #include <fstream>
 #include <iomanip>
 #include <signal.h>
+#include <chrono>
+#include<ratio>
 
 using namespace std;
+using namespace chrono;
 
 // Use this function in main to generate the required dataset
 void genData(void);
@@ -198,7 +201,7 @@ void testAksLnPparallel() {
     }
   }
   else  {
-  	if(aksLnPparallel(number))
+  	if(aksLnP2core(number))
   		std::cout << " is prime" << std::endl;
   	else
   		std::cout << " is composite" << std::endl;
@@ -260,7 +263,7 @@ void generateDatasetParallel()
       }
     }
     else  {
-    	if(aksLnPparallel(number))
+    	if(aksLnP2core(number))
         std::cout << prime_array[i] << " is prime" << std::endl;
     	else
         std::cout << prime_array[i] << " is composite in else" << std::endl;
@@ -353,17 +356,20 @@ void genData(void)
     float logSt,
           logPt;
     mpz_t gNum;
-
-    clock_t t1,
-            t2,
-            serialTime,
-            parallelTime;
     
-    cout << setw(5) << "#Iter" << setw(12) << "Number" << setw(10) << "ST(ms)"
-         << setw(10) << "log10(ST)" << setw(10) << "PT(ms)" << setw(12) << "log10(PT)" << endl;
+    high_resolution_clock::time_point t1,
+                                      t2,
+                                      core1,
+                                      core2,
+                                      chore4,
+                                      core6,
+                                      core8;
+    
+    cout << setw(5) << "#Iter" << setw(12) << "Number" << setw(10) << "1C(ms)"
+         << setw(10) << "2C" << setw(10) << "4C(ms)" << setw(10) << "6C"  << setw(10) << "8C" << endl;
 
-    outfile << setw(5) << "#Iter" << setw(12) << "Number" << setw(10) << "ST(ms)"
-            << setw(10) << "log10(ST)" << setw(10) << "PT(ms)" << setw(12) << "log10(PT)" << '\n';
+    outfile << setw(5) << "#Iter" << setw(12) << "Number" << setw(10) << "1C(ms)"
+            << setw(10) << "2C" << setw(10) << "4C(ms)" << setw(10) << "6C" << setw(10) << "8C" << '\n';
 
 
     while (!infile.eof())
@@ -373,28 +379,44 @@ void genData(void)
         mpz_init_set_ui(gNum, num);
 
         // Serial Execution
-        t1 = clock();
+        t1 = high_resolution_clock::now();
         aksLnPserial(gNum);
-        t2 = clock();
-        serialTime = t2 - t1;
-        logSt = log10(serialTime);
+        t2 = high_resolution_clock::now();
+        duration<double> core1 = duration_cast<chrono::milliseconds>(t2 - t1);
 
-        // Parallel Execution
-        t1 = clock();
-        aksLnPparallel(gNum);
-        t2 = clock();
-        parallelTime = t2 - t1;
-        logPt = log10(parallelTime);
+        // Serial Execution
+        t1 = high_resolution_clock::now();
+        aksLnP2core(gNum);
+        t2 = high_resolution_clock::now();
+        duration<double> core2 = duration_cast<chrono::milliseconds>(t2 - t1);
 
+        // Serial Execution
+        t1 = high_resolution_clock::now();
+        aksLnP4core(gNum);
+        t2 = high_resolution_clock::now();
+        duration<double> core4 = duration_cast<chrono::milliseconds>(t2 - t1);
+
+        // Serial Execution
+        t1 = high_resolution_clock::now();
+        aksLnP6core(gNum);
+        t2 = high_resolution_clock::now();
+        duration<double> core6 = duration_cast<chrono::milliseconds>(t2 - t1);
+        
+        // Serial Execution
+        t1 = high_resolution_clock::now();
+        aksLnP8core(gNum);
+        t2 = high_resolution_clock::now();
+        duration<double> core8 = duration_cast<chrono::milliseconds>(t2 - t1);
+                                                                                
         // On terminal
-        cout << setw(5) << iteration << setw(12) << num << setw(10) << serialTime
-             << setw(10) << setprecision(5) << logSt << setw(10) << parallelTime << setw(12) << setprecision(5)
-             << logPt << endl;
+        cout << setw(5) << iteration << setw(12) << num << setw(10) << core1.count()
+             << setw(10) << core2.count() << setw(10) << core4.count() << setw(10) << core6.count()
+             << setw(10) << core8.count() << endl;
 
-        // On file
-        outfile << setw(5) << iteration << setw(12) << num << setw(10) << serialTime
-                << setw(10) << setprecision(5) << logSt << setw(10) << parallelTime << setw(12) << setprecision(5) 
-                << logPt << '\n';
+        // To file
+        outfile << setw(5) << iteration << setw(12) << num << setw(10) << core1.count()
+                << setw(10) << core2.count() << setw(10) << core4.count() << setw(10) << core6.count()
+                << setw(10) << core8.count() << '\n';
 
         iteration++;
     }

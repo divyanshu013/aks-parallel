@@ -155,7 +155,7 @@ class ParallelWork
 *              parallel (bool) - set for parallel execution, unset for serial
 * return : if congruence exists or not (bool) - true if exist and false otherwise
 */
-bool congruenceExists(const mpz_t number, const mpz_t r, const bool parallel = false);
+bool congruenceExists(const mpz_t number, const mpz_t r, const int cores);
 
 //-------------------------------------------------------------------------//
 
@@ -171,12 +171,15 @@ bool aksLnPserial(const mpz_t number);
 //-------------------------------------------------------------------------//
 
 /*
-* aksLnPparallel() - This function runs the aks algorithm (parallel) improved
+* aksLnP2core() - This function runs the aks algorithm (parallel) improved
 * by Lenstra and Pomerance
 *
 * parameters : number (mpz_t) - the number to be tested
 * return : if prime or not (bool) - true if prime and false otherwise
 */
-bool aksLnPparallel(const mpz_t number);
+bool aksLnP2core(const mpz_t number);
+bool aksLnP4core(const mpz_t number);
+bool aksLnP6core(const mpz_t number);
+bool aksLnP8core(const mpz_t number);
 
 #endif
