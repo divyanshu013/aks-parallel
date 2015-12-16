@@ -6,6 +6,9 @@ all:
 
 test:
 	$(CC) test.cpp helper.cpp $(CFLAGS) -o run
+	
+main:
+	$(CC) main.cpp helper.cpp $(CFLAGS) -o run
 
 clean:
 	rm run
